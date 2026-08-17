@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Exception 
@@ -9,6 +10,7 @@ public class App {
         Facility facility1 = new Facility(1,"월계 체육관","Gym",50);
         Facility facility2 = new Facility(2,"공릉 체육관","Gym",45);
         
+        Scanner sc = new Scanner(System.in);
 
         Reservation reservation1 = new Reservation(1,user1,facility1,"2026-08-15");
         Reservation reservation2 = new Reservation(0, user2, facility2, "2026-08-15");

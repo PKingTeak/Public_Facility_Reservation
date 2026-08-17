@@ -46,9 +46,12 @@ public class Reservation {
 
     public void Cancel()
     {
-        if(this.status == ReservationStatus.RESERVED)
+        if(this.status == ReservationStatus.CANCELLED)
         {
-            this.status = ReservationStatus.CANCELLED;
+            throw new IllegalStateException("이미 취소된 예약입니다.");
+           
         }
+        
+        this.status = ReservationStatus.CANCELLED;
     } 
 }
