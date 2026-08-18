@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+
 public class App {
 
     public static void clearConsole() {
@@ -11,7 +12,7 @@ public class App {
         // 초기화
         int Id = 0;
         Facility facility1 = new Facility(1, "월계 체육관", "Gym", 50);
-       
+
         Schedule_Table scheduleTable = new Schedule_Table();
         Scanner sc = new Scanner(System.in);
 
@@ -21,7 +22,7 @@ public class App {
         int ageinput = sc.nextInt();
         sc.nextLine();
         User user1 = new User(sinput, ageinput);
-        
+
         clearConsole();
 
         System.out.print("예약할 기관명을 적어주세요");
@@ -30,22 +31,18 @@ public class App {
         System.out.print("예약할 날짜를 적어주세요/ YYYY-MM_DD");
         String reDate = sc.nextLine();
 
-        ArrayList<Reservation> AllReservation =scheduleTable.getAllListDate(sinput);
-        
+        ArrayList<Reservation> AllReservation = scheduleTable.getAllListDate(sinput);
 
-        for(Reservation re : AllReservation)
-        {
-            if(re.getReservationDate() == reDate && re.getReservationFacilityName() == sinput)
-            {
-                //이미 해당 날짜에 예약됨
+        for (Reservation re : AllReservation) {
+            if (re.getReservationDate() == reDate && re.getReservationFacilityName() == sinput) {
+                // 이미 해당 날짜에 예약됨
                 System.out.print("해당 날짜는 이미 예약이 완료되었습니다.");
             }
         }
-        
-        Reservation res = new Reservation(Id, user1, facility1, reDate);
-        scheduleTable.addReservation(reDate,res);
-        
 
+        Reservation res = new Reservation(user1, facility1, reDate);
+        scheduleTable.addReservation(reDate, res);
 
     }
+
 }

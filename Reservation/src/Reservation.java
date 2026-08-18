@@ -12,9 +12,9 @@ public class Reservation {
         RESERVED,
         CANCELLED
     }
+    
 
-    public Reservation(long _id, User _user, Facility _facility, String _date) {
-        this.id = _id;
+    public Reservation(User _user, Facility _facility, String _date) {
         this.user = _user;
         this.facility = _facility;
         this.date = _date;
@@ -44,12 +44,11 @@ public class Reservation {
         this.status = ReservationStatus.RESERVED;
     }
 
-    public void Cancel()
+    public void cancel()
     {
         if(this.status == ReservationStatus.CANCELLED)
         {
             throw new IllegalStateException("이미 취소된 예약입니다.");
-           
         }
         
         this.status = ReservationStatus.CANCELLED;

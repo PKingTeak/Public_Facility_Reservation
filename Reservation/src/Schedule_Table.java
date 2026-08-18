@@ -12,6 +12,9 @@ public class Schedule_Table
         schedule = new HashMap<String, ArrayList<Reservation>>();
     }
 
+    //해당 기관을 찾아서 정보 조회기능
+    
+
     public void addReservation(String _date, Reservation _reservation) 
     {
         ArrayList<Reservation> arr = schedule.get(_date);
@@ -26,12 +29,12 @@ public class Schedule_Table
         arr.add(_reservation);
     }
 
-    public Reservation getReservation(String _date, long _reservationId) {
+    public Reservation getReservation(String _date, long _facilityId) {
         if (schedule.containsKey(_date)) {
             ArrayList<Reservation> arr = schedule.get(_date);
 
             for (Reservation res : arr) {
-                if (res.getReservationId() == _reservationId) {
+                if (res.getReservationId() == _facilityId) {
                     return res;
                 }
             }
@@ -50,14 +53,18 @@ public class Schedule_Table
             return;
         }
 
+
+
+        
         for (Reservation res : arr) 
         {
-            if (res.getReservationId() == _reservationId) 
-            {
-                res.Cancel();
-                return;
-            }
-        }
+        if (res.getReservationId() == _reservationId) 
+        {
+        res.cancel();
+        return;
+    }
+}
+
 
     }
 
