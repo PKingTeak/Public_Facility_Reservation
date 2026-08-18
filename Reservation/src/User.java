@@ -1,12 +1,14 @@
 public class User
 {
-    private long id;
+    private static long userCount = 0; //고유번호로 존재해야하기 때문에
+    private long id; 
     private String name;
     private int age;
 
-    public User(long _id, String _name, int _age)
+    public User(String _name, int _age)
     {
-        this.id = _id;
+        userCount++;
+        this.id++;
         this.name = _name;
         this.age = _age;
     }

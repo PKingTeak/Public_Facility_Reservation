@@ -1,35 +1,51 @@
-import java.util.ArrayList;
 import java.util.Scanner;
-
+import java.util.ArrayList;
 public class App {
-    public static void main(String[] args) throws Exception 
-    {
-        
-        User user1 = new User(1,"PKT",25);
-        User user2  = new User(0,"Faker", 11);
-        Facility facility1 = new Facility(1,"월계 체육관","Gym",50);
-        Facility facility2 = new Facility(2,"공릉 체육관","Gym",45);
-        
+
+    public static void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    public static void main(String[] args) throws Exception {
+        // 초기화
+        int Id = 0;
+        Facility facility1 = new Facility(1, "월계 체육관", "Gym", 50);
+       
+        Schedule_Table scheduleTable = new Schedule_Table();
         Scanner sc = new Scanner(System.in);
 
-        Reservation reservation1 = new Reservation(1,user1,facility1,"2026-08-15");
-        Reservation reservation2 = new Reservation(0, user2, facility2, "2026-08-15");
+        // 입력
+        System.out.print("본인 인적사항을 적어주세요 : (이름,나이 순으로 적어주세요");
+        String sinput = sc.nextLine();
+        int ageinput = sc.nextInt();
+        sc.nextLine();
+        User user1 = new User(sinput, ageinput);
+        
+        clearConsole();
 
-        Schedule_Table scheduleTable = new Schedule_Table();
+        System.out.print("예약할 기관명을 적어주세요");
+        sinput = sc.nextLine();
 
+        System.out.print("예약할 날짜를 적어주세요/ YYYY-MM_DD");
+        String reDate = sc.nextLine();
 
+        ArrayList<Reservation> AllReservation =scheduleTable.getAllListDate(sinput);
+        
 
-        scheduleTable.addReservation(reservation1.getReservationDate(), reservation1);
-        scheduleTable.addReservation(reservation2.getReservationDate(),reservation2);
-
-        String date = "2026-08-15";
-       
-        ArrayList<Reservation> answer = scheduleTable.getAllListDate(date);
-
-        for (var i : answer)
+        for(Reservation re : AllReservation)
         {
-            System.err.println(i.getReservationUserName());
-            System.err.println(i.getReservationFacilityName());
+            if(re.getReservationDate() == reDate && re.getReservationFacilityName() == sinput)
+            {
+                //이미 해당 날짜에 예약됨
+                System.out.print("해당 날짜는 이미 예약이 완료되었습니다.");
+            }
         }
+        
+        Reservation res = new Reservation(Id, user1, facility1, reDate);
+        scheduleTable.addReservation(reDate,res);
+        
+
+
     }
 }
