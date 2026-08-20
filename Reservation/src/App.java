@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class App {
 
@@ -10,38 +9,36 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         // 초기화
-        int Id = 0;
-        Facility facility1 = new Facility(1, "월계 체육관", "Gym", 50);
-
+        
+        FacilityManager Fmanager = new FacilityManager(); // 이미 값은 생성
         Schedule_Table scheduleTable = new Schedule_Table();
         Scanner sc = new Scanner(System.in);
 
-        // 입력
+        // 사용자 정보 입력
         System.out.print("본인 인적사항을 적어주세요 : (이름,나이 순으로 적어주세요");
         String sinput = sc.nextLine();
         int ageinput = sc.nextInt();
         sc.nextLine();
-        User user1 = new User(sinput, ageinput);
+        User user1 = new User(011, sinput, ageinput);
 
         clearConsole();
-
-        System.out.print("예약할 기관명을 적어주세요");
-        sinput = sc.nextLine();
 
         System.out.print("예약할 날짜를 적어주세요/ YYYY-MM_DD");
         String reDate = sc.nextLine();
 
-        ArrayList<Reservation> AllReservation = scheduleTable.getAllListDate(sinput);
+        // 조회
+        if (scheduleTable.CheckDate(reDate)) {
 
-        for (Reservation re : AllReservation) {
-            if (re.getReservationDate() == reDate && re.getReservationFacilityName() == sinput) {
-                // 이미 해당 날짜에 예약됨
-                System.out.print("해당 날짜는 이미 예약이 완료되었습니다.");
-            }
+            System.out.print("예약할 기관명을 적어주세요");
+            sinput = sc.nextLine();
+
+            long resId = Fmanager.getFacilityIdByName(sinput);
+            Facility resfacility = Fmanager.geFacilityInfoById(resId);
+            scheduleTable.addReservation(reDate, user1, resfacility);
+
+        } else {
+            System.out.print("{reDate}날은 이미 예약되었습니다.");
         }
-
-        Reservation res = new Reservation(user1, facility1, reDate);
-        scheduleTable.addReservation(reDate, res);
 
     }
 

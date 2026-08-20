@@ -5,7 +5,7 @@ public class Facility {
     private int capacity;
 
 
-    public Facility(long _id, String _name, String _location, int _capacity ) {
+    Facility(long _id, String _name, String _location, int _capacity ) {
         this.id = _id;
         this.name = _name;
         this.location = _location;

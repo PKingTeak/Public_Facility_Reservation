@@ -3,7 +3,7 @@ public class Reservation {
     private long id;
     private User user;
     private Facility facility;
-    private String date;
+    private String date; //시간대 별로 나눌예정
     private ReservationStatus status;
 
 
@@ -25,6 +25,11 @@ public class Reservation {
         return this.id;
     }
 
+    public long getReseravtoinUserId()
+    {
+        return user.getId();
+    }
+
     public String getReservationUserName() {
         return this.user.getName();
     }
@@ -33,6 +38,10 @@ public class Reservation {
         return this.facility.getFacilityName();
     }
 
+    public long getReservationFacilityId()
+    {
+        return facility.getFacilityId();
+    }
     public String getReservationDate() {
         return this.date;
     }
