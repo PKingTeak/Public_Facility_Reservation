@@ -1,12 +1,16 @@
 public class User
 {
+    static long totalUserCounter = 0;
     private long id; 
     private String name;
     private int age;
+    //성별
+    
 
-    public User(long _id ,String _name, int _age)
+    public User(String _name, int _age)
     {
-        this.id = _id;
+        totalUserCounter++;
+        this.id = totalUserCounter;
         this.name = _name;
         this.age = _age;
     }

@@ -1,0 +1,40 @@
+
+
+User
+→ 현재 App에서 생성
+  (나중에 UserManager/Service로 갈 수도 있음)
+
+Facility
+→ FacilityManager가 생성
+
+Reservation
+→ Schedule_Table이 생성
+
+
+Reservation
+├ reservationId
+│
+├ User ─────────→ User 객체
+│                 └ userId
+│
+├ Facility ─────→ Facility 객체
+│                 └ facilityId
+│
+├ date
+└ status
+
+현재
+Facility 관리         ✅
+이름 → Facility 조회   ✅
+예약 객체 내부 생성    ✅
+시설 ID 중복검사       ✅
+
+다음
+Reservation ID 자동발급  ← 다음 작업 ✅
+User ID 자동발급✅
+CheckDate() 구조 수정 ✅
+잘못된 시설 입력 방어 ✅
+try-catch 연결 ✅
+시간(start/end 또는 TimeSlot) ✅
+
+취소 테스트 -> 어떻게 취소한 곳을 다시 예약할지 고민

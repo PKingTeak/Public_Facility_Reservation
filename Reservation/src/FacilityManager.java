@@ -7,7 +7,7 @@ public class FacilityManager {
     FacilityManager()
     {
         Facility facility = new Facility(1, "월계체육관","GYM", 50);
-        Facility facility2 = new Facility(2, "월계수영장", "SwimmingPool", 20);
+        Facility facility2 = new Facility(2, "월계수영장", "SwimmingPool", 100);
         Facility facility3 = new Facility(3, "월계축구장", "Soccer", 20);
 
         setFacility(facility.getFacilityId(), facility);
@@ -41,6 +41,8 @@ public class FacilityManager {
 
         return -1;
     }
+
+    
 
     public String getFacilityNameById(long _id) {
         if (facilityMaps.containsKey(_id)) {

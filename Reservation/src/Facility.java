@@ -2,7 +2,7 @@ public class Facility {
     private long id;
     private String name;
     private String location;
-    private int capacity;
+    private int capacity; //수용가능 인원
 
 
     Facility(long _id, String _name, String _location, int _capacity ) {
