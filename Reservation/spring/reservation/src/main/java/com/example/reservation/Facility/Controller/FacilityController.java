@@ -31,8 +31,8 @@ public class FacilityController {
     }
 
     @GetMapping("/{id}")
-    public String getMethodName(@PathVariable long _id) {
-        return facilityservice.getFacilityNameById(_id);
+    public String getMethodName(@PathVariable long id) {
+        return facilityservice.getFacilityNameById(id);
     }
     
 

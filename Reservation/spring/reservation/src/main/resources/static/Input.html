@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Hello</title>
 </head>
+
 <body>
 
     <h1>이름을 입력하세요</h1>
@@ -13,7 +15,23 @@
 
     <p id="result"></p>
 
+    <button onclick="showRegisterForm()">회원가입</button>
+
+    <div id="registerForm" style="display: none;">
+        <input id="name" placeholder="이름">
+        <input id="age" placeholder="나이">
+        <button onclick="newMemberShip()">등록</button>
+
+
+        <p id="registerResult"></p>
+    </div>
+
+
     <script>
+
+        function showRegisterForm() {
+            document.getElementById("registerForm").style.display = "block";
+        }
         function sendName() {
             const name = document.getElementById("nameInput").value;
 
@@ -23,7 +41,42 @@
                     document.getElementById("result").innerText = data;
                 });
         }
+
+        function newMemberShip() {
+            const name = document.getElementById("name").value;
+            const age = document.getElementById("age").value;
+
+            fetch("/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name,
+                    age: Number(age)
+                })
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById("registerResult").innerText = "회원가입 성공";
+                }
+                else {
+                    document.getElementById("registerResult").innerText = "회원가입 실패";
+                }
+            })
+            .catch(error => {
+
+        console.error("요청 오류:", error);
+
+        document.getElementById("registerResult").innerText =
+            "서버 요청 자체가 실패했습니다.";
+    });
+
+        }
+
+        function showRegisterForm() {
+            document.getElementById("registerForm").style.display = "block";
+        }
     </script>
 
+
 </body>
+
 </html>

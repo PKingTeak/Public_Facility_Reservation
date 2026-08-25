@@ -2,14 +2,17 @@
 package com.example.reservation.Facility;
 
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.example.reservation.Facility.DTO.ReservationRequest;
 
 public class Reservation {
 
     private long id; // 예약번호
     private User user;
     private Facility facility;
-    private String date; // 시간대 별로 나눌예정
+    private LocalDate  date; // 시간대 별로 나눌예정
     private ReservationStatus status;
     private TimeSlot resTimeSlot = new TimeSlot();
 
@@ -54,7 +57,7 @@ public class Reservation {
         }
     }
 
-    public Reservation(long _id, User _user, Facility _facility, String _date, LocalTime _starTime,
+    public Reservation(long _id, User _user, Facility _facility, LocalDate _date, LocalTime _starTime,
             LocalTime _endTime) {
         this.id = _id;
         this.user = _user;
@@ -62,6 +65,13 @@ public class Reservation {
         this.date = _date;
         this.resTimeSlot.setTimeSlot(_starTime, _endTime);
         status = ReservationStatus.RESERVED;
+    }
+
+    public Reservation(ReservationRequest res)
+    {
+        this.id = res.getresId();
+      //  this.user = res.getuserId();
+        
     }
 
     public long getReservationId() {
@@ -84,7 +94,7 @@ public class Reservation {
         return facility.getFacilityId();
     }
 
-    public String getReservationDate() {
+    public LocalDate  getReservationDate() {
         return this.date;
     }
 
