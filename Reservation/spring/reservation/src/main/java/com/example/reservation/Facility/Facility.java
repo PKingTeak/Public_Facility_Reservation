@@ -1,3 +1,6 @@
+package com.example.reservation.Facility;
+
+
 public class Facility {
     private long id;
     private String name;

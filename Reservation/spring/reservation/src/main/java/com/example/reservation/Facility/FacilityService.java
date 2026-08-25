@@ -1,10 +1,15 @@
-import java.util.HashMap;
+package com.example.reservation.Facility;
 
+import org.springframework.stereotype.Service;
+import java.util.HashMap;
+import java.util.Collection;
+
+@Service
 //해당 클래스를 통해서 실제 사용자들이 편리한 이름을 사용하여 Id를 조회하여 변경을 알려주고 관리하는 역할
-public class FacilityManager {
+public class FacilityService  {
     HashMap<Long, Facility> facilityMaps = new HashMap<>();
 
-    FacilityManager()
+    FacilityService()
     {
         Facility facility = new Facility(1, "월계체육관","GYM", 50);
         Facility facility2 = new Facility(2, "월계수영장", "SwimmingPool", 100);
@@ -60,5 +65,11 @@ public class FacilityManager {
         }
         
         return null;
+    }
+
+
+    public Collection<Facility> getAllFacitiy()
+    {
+        return facilityMaps.values();
     }
 }

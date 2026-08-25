@@ -1,3 +1,5 @@
+package com.example.reservation.Facility;
+
 public class User
 {
     static long totalUserCounter = 0;
