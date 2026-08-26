@@ -110,6 +110,24 @@
         <p id="registerResult"></p>
     </div>
 
+    <hr>
+
+    <h2>예약 취소</h2>
+
+    <div>
+        <label for="cancelDate">예약 날짜 선택</label>
+
+        <input type="date" id="cancelDate" onchange="loadReservationsByDate()">
+    </div>
+
+    <br>
+
+    <div id="reservationList">
+        <!-- 선택한 날짜의 예약 목록이 여기에 생성됨 -->
+    </div>
+
+    <p id="cancelResult"></p>
+
 
 
     <script>
@@ -469,6 +487,157 @@
                 });
         }
 
+
+
+        // ==========================================
+// 선택한 날짜의 예약 목록 조회
+// ==========================================
+
+function loadReservationsByDate()
+{
+    const date =
+        document.getElementById("cancelDate").value;
+
+    const list =
+        document.getElementById("reservationList");
+
+
+    // 기존 목록 초기화
+    list.innerHTML = "";
+
+
+    if (date === "")
+    {
+        return;
+    }
+
+
+    fetch("/reservation/" + date)
+
+        .then(response => {
+
+            if (!response.ok)
+            {
+                throw new Error("예약 조회 실패");
+            }
+
+            return response.json();
+        })
+
+        .then(data => {
+
+            // 해당 날짜에 예약이 하나도 없는 경우
+            if (data.length === 0)
+            {
+                list.innerText =
+                    "해당 날짜에 예약이 없습니다.";
+
+                return;
+            }
+
+
+            data.forEach(reservation => {
+
+                // 이미 취소된 예약은 표시하지 않음
+                if (reservation.status === "CANCELLED")
+                {
+                    return;
+                }
+
+
+                const button =
+                    document.createElement("button");
+
+
+                // 화면에 표시할 내용
+                button.textContent =
+                    reservation.reservationFacilityName
+                    + " / "
+                    + reservation.reservationUserName
+                    + " / "
+                    + reservation.startTime
+                    + " : "
+                    + reservation.endTime
+
+
+                // 버튼 클릭 → 해당 예약 취소
+                button.onclick = function()
+                {
+                    cancelReservation(
+                        date,
+                        reservation.reservationId
+                    );
+                };
+
+
+                list.appendChild(button);
+                list.appendChild(
+                    document.createElement("br")
+                );
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            list.innerText =
+                "예약 목록을 불러오지 못했습니다.";
+
+        });
+}
+
+
+
+// ==========================================
+// 예약 취소
+// ==========================================
+
+function cancelReservation(date, reservationId)
+{
+    const result =
+        document.getElementById("cancelResult");
+
+
+    fetch(
+        "/reservation/"
+        + date
+        + "/"
+        + reservationId,
+        {
+            method: "DELETE"
+        }
+    )
+
+    .then(response => {
+
+        if (response.ok)
+        {
+            result.innerText =
+                "예약이 취소되었습니다.";
+
+
+            // 취소 후 목록 다시 불러오기
+            loadReservationsByDate();
+        }
+        else
+        {
+            result.innerText =
+                "예약 취소에 실패했습니다.";
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        result.innerText =
+            "서버 요청 중 오류가 발생했습니다.";
+
+    });
+}
     </script>
 
 </body>

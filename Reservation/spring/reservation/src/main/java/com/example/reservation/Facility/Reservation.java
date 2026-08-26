@@ -54,6 +54,14 @@ public class Reservation {
         {
              return startTime.equals(_startTime) && endTime.equals(_endTime);
         }
+        public LocalTime getStartTime()
+        {
+            return startTime;
+        }
+        public LocalTime getEndTime()
+        {
+            return endTime;
+        }
     }
 
     public Reservation(long _id, User _user, Facility _facility, LocalDate _date, LocalTime _starTime,
@@ -94,6 +102,15 @@ public class Reservation {
 
     public TimeSlot getReservationTimeSlot() {
         return resTimeSlot;
+    }
+
+    public LocalTime getStartTime()
+    {
+        return resTimeSlot.startTime;
+    }
+    public LocalTime getEndTime()
+    {
+        return resTimeSlot.endTime;
     }
 
     public void Reserve() {

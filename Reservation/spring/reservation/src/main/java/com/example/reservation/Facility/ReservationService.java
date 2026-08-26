@@ -42,7 +42,7 @@ public class ReservationService {
         if (user == null || facility == null) {
             throw new IllegalStateException("user 혹은 facility가 null입니다");
         }
-        if (arr == null) // 배열이 존재하지 않을때
+        if (arr == null) // 배열이 존재하지 않을때 해당 날짜에 아무것도 없을때 
         {
             arr = new ArrayList<Reservation>();
 
@@ -147,6 +147,20 @@ public class ReservationService {
         return null;
         // 값 없음
     }
+
+    public void cancelReservation(LocalDate _date,long _reservationId)
+    {
+        for(Reservation res : schedule.get(_date))
+        {
+            if(res.getReservationId() == _reservationId)
+            {
+                res.cancel();
+                return;
+            }
+        }
+        throw new IllegalStateException("해당 예약 내역이 존재하지 않습니다");
+
+    }
     /*
      * public void cancelReservation(String _date, long _reservationId) {
      * 
@@ -176,5 +190,10 @@ public class ReservationService {
     public Collection<ArrayList<Reservation>> getAllReservation()
     {
         return schedule.values();
+    }
+
+    public ArrayList<Reservation> getReservationsByDate(LocalDate _date)
+    {
+        return schedule.get(_date);
     }
 }

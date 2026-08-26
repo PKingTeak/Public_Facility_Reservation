@@ -38,3 +38,26 @@ try-catch 연결 ✅
 시간(start/end 또는 TimeSlot) ✅
 
 취소 테스트 -> 어떻게 취소한 곳을 다시 예약할지 고민
+
+
+회원가입 POST /users            ✅
+회원 전체 조회 GET /users       ✅
+이름으로 User ID 조회           ✅
+
+시설 전체 조회 GET /facility    ✅
+시설 선택 UI                    ✅
+
+예약 입력 UI                    ✅
+날짜/시간 선택                  ✅
+POST /reservation              ✅
+User + Facility 연결           ✅
+Reservation 생성               ✅
+예약 조회                       ✅
+
+중복 예약 방지                  🔶 재검증 필요
+취소 API                        ❌
+예외 상태코드 처리              ❌
+DB/JPA                         ❌
+Spring Security                ❌
+Validation                     ❌
+JUnit                          ❌
