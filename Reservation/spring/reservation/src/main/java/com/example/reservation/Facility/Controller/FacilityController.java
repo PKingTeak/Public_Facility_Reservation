@@ -25,7 +25,7 @@ public class FacilityController {
     }
 
     @GetMapping
-    public Collection<Facility> getFacility()
+    public Collection<Facility> getAllFacility()
     {
         return facilityservice.getAllFacitiy();
     }

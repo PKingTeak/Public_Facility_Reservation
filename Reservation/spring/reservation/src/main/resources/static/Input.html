@@ -1,81 +1,475 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
-    <title>Hello</title>
+    <title>시설 예약 시스템</title>
 </head>
 
-<body>
+<body onload="loadFacilities()">
 
-    <h1>이름을 입력하세요</h1>
+    <h1>시설 예약</h1>
 
-    <input type="text" id="nameInput">
-    <button onclick="sendName()">전송</button>
+    <!-- =========================
+         예약 영역
+    ========================== -->
 
-    <p id="result"></p>
+    <div>
+        <label for="nameInput">예약자 이름</label>
+        <input type="text" id="nameInput" placeholder="이름을 입력하세요">
+    </div>
 
-    <button onclick="showRegisterForm()">회원가입</button>
+    <br>
 
-    <div id="registerForm" style="display: none;">
-        <input id="name" placeholder="이름">
-        <input id="age" placeholder="나이">
-        <button onclick="newMemberShip()">등록</button>
+    <div>
+        <label for="facilitySelect">시설 선택</label>
 
+        <select id="facilitySelect">
+            <option value="">시설을 선택하세요</option>
+        </select>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="reservationDate">예약 날짜</label>
+
+        <input type="date" id="reservationDate" onchange="showTimeSelect()">
+    </div>
+
+    <br>
+
+    <!-- 날짜를 선택하면 표시 -->
+    <div id="timeSelectArea" style="display: none;">
+
+        <label for="startTime">시작시간</label>
+
+        <select id="startTime">
+            <option value="">시작시간 선택</option>
+
+            <option value="09:00">09:00</option>
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+        </select>
+
+        <span> ~ </span>
+
+        <label for="endTime">종료시간</label>
+
+        <select id="endTime">
+            <option value="">종료시간 선택</option>
+
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+        </select>
+
+    </div>
+
+    <br>
+
+    <button onclick="addReservation()">
+        예약하기
+    </button>
+
+    <p id="reservationResult"></p>
+
+
+    <hr>
+
+
+    <!-- =========================
+         회원가입 영역
+    ========================== -->
+
+    <h2>회원가입</h2>
+
+    <div>
+        <input type="text" id="newNameInput" placeholder="이름">
+
+        <input type="number" id="age" placeholder="나이">
+
+        <button onclick="newMemberShip()">
+            회원가입
+        </button>
 
         <p id="registerResult"></p>
     </div>
 
 
+
     <script>
 
-        function showRegisterForm() {
-            document.getElementById("registerForm").style.display = "block";
-        }
-        function sendName() {
-            const name = document.getElementById("nameInput").value;
+        // ==================================================
+        // 시설 전체 조회
+        // GET /facility
+        // ==================================================
 
-            fetch("/hello?name=" + name)
-                .then(response => response.text())
+        function loadFacilities() {
+            fetch("/facility")
+
+                .then(response => response.json())
+
                 .then(data => {
-                    document.getElementById("result").innerText = data;
+
+                    const select =
+                        document.getElementById("facilitySelect");
+
+
+                    data.forEach(facility => {
+
+                        const option =
+                            document.createElement("option");
+
+
+                        // 서버에서 사용할 시설 ID
+                        option.value =
+                            facility.facilityId;
+
+
+                        // 화면에 보여줄 시설 이름
+                        option.textContent =
+                            facility.facilityName;
+
+
+                        select.appendChild(option);
+                    });
+
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        "시설 조회 실패:",
+                        error
+                    );
+
                 });
         }
 
-        function newMemberShip() {
-            const name = document.getElementById("name").value;
-            const age = document.getElementById("age").value;
 
-            fetch("/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: name,
-                    age: Number(age)
+
+        // ==================================================
+        // 날짜 선택 시 시간 메뉴 표시
+        // ==================================================
+
+        function showTimeSelect() {
+            const date =
+                document.getElementById(
+                    "reservationDate"
+                ).value;
+
+
+            const timeArea =
+                document.getElementById(
+                    "timeSelectArea"
+                );
+
+
+            if (date !== "") {
+                timeArea.style.display = "block";
+            }
+            else {
+                timeArea.style.display = "none";
+            }
+        }
+
+
+
+        // ==================================================
+        // 예약
+        // ==================================================
+
+        function addReservation() {
+            // HTML에서 예약 정보 읽기
+            const name =
+                document.getElementById(
+                    "nameInput"
+                ).value;
+
+
+            const facilityId =
+                document.getElementById(
+                    "facilitySelect"
+                ).value;
+
+
+            const date =
+                document.getElementById(
+                    "reservationDate"
+                ).value;
+
+
+            const startTime =
+                document.getElementById(
+                    "startTime"
+                ).value;
+
+
+            const endTime =
+                document.getElementById(
+                    "endTime"
+                ).value;
+
+
+
+            // 입력 확인
+            if (
+                name === "" ||
+                facilityId === "" ||
+                date === "" ||
+                startTime === "" ||
+                endTime === ""
+            ) {
+                document.getElementById(
+                    "reservationResult"
+                ).innerText =
+                    "예약 정보를 모두 입력해주세요.";
+
+                return;
+            }
+
+
+
+            // ==============================================
+            // 이름 → User ID 조회
+            //
+            // GET /users/id?name=홍길동
+            // ==============================================
+
+            fetch(
+                "/users/by-name?username="
+                + encodeURIComponent(name)
+            )
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(
+                            "USER_NOT_FOUND"
+                        );
+                    }
+
+
+                    // 서버가 long 값 하나를 반환
+                    return response.json();
                 })
-            }).then(response => {
-                if (response.ok) {
-                    document.getElementById("registerResult").innerText = "회원가입 성공";
-                }
-                else {
-                    document.getElementById("registerResult").innerText = "회원가입 실패";
-                }
-            })
-            .catch(error => {
 
-        console.error("요청 오류:", error);
 
-        document.getElementById("registerResult").innerText =
-            "서버 요청 자체가 실패했습니다.";
-    });
+                // ==============================================
+                // User ID 조회 성공
+                // → 예약 POST 요청
+                // ==============================================
 
+                .then(userId => {
+
+                    return fetch(
+                        "/reservation",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                userId:
+                                    Number(userId),
+
+                                facilityId:
+                                    Number(facilityId),
+
+                                date:
+                                    date,
+
+                                startTime:
+                                    startTime,
+
+                                endTime:
+                                    endTime
+                            })
+                        }
+                    );
+
+                })
+
+
+                // ==============================================
+                // 예약 결과 처리
+                // ==============================================
+
+                .then(response => {
+
+                    if (response.ok) {
+                        document.getElementById(
+                            "reservationResult"
+                        ).innerText =
+                            "예약이 완료되었습니다.";
+                    }
+                    else {
+                        document.getElementById(
+                            "reservationResult"
+                        ).innerText =
+                            "예약에 실패했습니다.";
+                    }
+
+                })
+
+
+                // ==============================================
+                // User가 없거나 통신 실패
+                // ==============================================
+
+                .catch(error => {
+
+                    if (
+                        error.message ===
+                        "USER_NOT_FOUND"
+                    ) {
+                        document.getElementById(
+                            "reservationResult"
+                        ).innerText =
+                            "등록되지 않은 사용자입니다. 회원가입을 진행해주세요.";
+
+
+                        // 입력한 이름을
+                        // 회원가입 칸에 자동으로 넣기
+                        document.getElementById(
+                            "newNameInput"
+                        ).value =
+                            name;
+                    }
+                    else {
+                        console.error(
+                            "예약 오류:",
+                            error
+                        );
+
+
+                        document.getElementById(
+                            "reservationResult"
+                        ).innerText =
+                            "서버 요청 중 오류가 발생했습니다.";
+                    }
+
+                });
         }
 
-        function showRegisterForm() {
-            document.getElementById("registerForm").style.display = "block";
+
+
+        // ==================================================
+        // 회원가입
+        //
+        // POST /users
+        // ==================================================
+
+        function newMemberShip() {
+            const name =
+                document.getElementById(
+                    "newNameInput"
+                ).value;
+
+
+            const age =
+                document.getElementById(
+                    "age"
+                ).value;
+
+
+
+            if (
+                name === "" ||
+                age === ""
+            ) {
+                document.getElementById(
+                    "registerResult"
+                ).innerText =
+                    "이름과 나이를 입력해주세요.";
+
+                return;
+            }
+
+
+
+            fetch(
+                "/users",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        name:
+                            name,
+
+                        age:
+                            Number(age)
+                    })
+                }
+            )
+
+                .then(response => {
+
+                    if (response.ok) {
+                        document.getElementById(
+                            "registerResult"
+                        ).innerText =
+                            "회원가입 성공";
+
+
+                        // 가입한 이름을
+                        // 예약자 이름 칸에 자동으로 넣기
+                        document.getElementById(
+                            "nameInput"
+                        ).value =
+                            name;
+                    }
+                    else {
+                        document.getElementById(
+                            "registerResult"
+                        ).innerText =
+                            "회원가입 실패";
+                    }
+
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        "회원가입 오류:",
+                        error
+                    );
+
+
+                    document.getElementById(
+                        "registerResult"
+                    ).innerText =
+                        "서버 요청 자체가 실패했습니다.";
+
+                });
         }
+
     </script>
-
 
 </body>
 

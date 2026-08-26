@@ -3,6 +3,7 @@ package com.example.reservation.Facility;
 
 import com.example.reservation.ReservationApplication;
 import java.util.Map;
+import java.util.Collection;
 
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class ReservationService {
             ReservationApplication reservationApplication) {
         this.userService = _userService;
         this.facilityService = _FacilityService;
+        
     }
 
 
@@ -34,8 +36,9 @@ public class ReservationService {
     //해당 기관 정보 조회 Spring 연동
     public void addReservation(ReservationRequest _request) { //오버라이드
         ArrayList<Reservation> arr = schedule.get(_request.getDate());
-        User user = userService.getUserById(_request.getuserId());
-        Facility facility = facilityService.geFacilityInfoById(_request.getfacilityId());
+        User user = userService.getUserById(_request.getUserId());
+        Facility facility = facilityService.geFacilityInfoById(_request.getFailityId());
+        System.out.println("받은 userId = " + _request.getUserId());
         if (user == null || facility == null) {
             throw new IllegalStateException("user 혹은 facility가 null입니다");
         }
@@ -45,6 +48,7 @@ public class ReservationService {
 
             Reservation res = new Reservation(totalScheduleNum, user, facility, _request.getDate(),
                     _request.getStartTime(), _request.getEndTime());
+            schedule.put(_request.getDate(), arr);
             arr.add(res);
             totalScheduleNum++;
             return;
@@ -56,7 +60,7 @@ public class ReservationService {
                 continue;
             }
 
-            if (res.getReseravtoinUserId() == _request.getfacilityId()) {
+            if (res.getReservationFacilityId() == _request.getFailityId()) {
                 if (res.getReservationTimeSlot().overlap(_request.getStartTime(), _request.getEndTime())) {
                     throw new IllegalStateException("해당 시간은 이미 예약이 되어있습니다.");
                 }
@@ -134,7 +138,7 @@ public class ReservationService {
             ArrayList<Reservation> arr = schedule.get(_date);
 
             for (Reservation res : arr) {
-                if (res.getReservationId() == _reservationId) {
+                if (res.getReservationId() ==  _reservationId) {
                     return res;
                 }
             }
@@ -169,4 +173,8 @@ public class ReservationService {
         return -1;
     }
 
+    public Collection<ArrayList<Reservation>> getAllReservation()
+    {
+        return schedule.values();
+    }
 }

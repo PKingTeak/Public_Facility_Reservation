@@ -5,7 +5,6 @@ package com.example.reservation.Facility;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.example.reservation.Facility.DTO.ReservationRequest;
 
 public class Reservation {
 
@@ -67,12 +66,7 @@ public class Reservation {
         status = ReservationStatus.RESERVED;
     }
 
-    public Reservation(ReservationRequest res)
-    {
-        this.id = res.getresId();
-      //  this.user = res.getuserId();
-        
-    }
+   
 
     public long getReservationId() {
         return this.id;

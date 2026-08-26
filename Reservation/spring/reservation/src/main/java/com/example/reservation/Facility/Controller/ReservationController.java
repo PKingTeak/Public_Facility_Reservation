@@ -2,6 +2,8 @@ package com.example.reservation.Facility.Controller;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,11 @@ public class ReservationController {
     public Reservation selectReservation(@PathVariable LocalDate date,@PathVariable long id)
     {
         return reservationService.getReservation(date, id);
+    }
+    @GetMapping
+    public Collection<ArrayList<Reservation>> getAllReservation()
+    {
+        return reservationService.getAllReservation();
     }
 
 

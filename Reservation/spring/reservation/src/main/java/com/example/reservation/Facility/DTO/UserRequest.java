@@ -5,7 +5,7 @@ public class UserRequest {
     private int age;
 
 
-    public String getUserName()
+    public String getName()
     {
         return name;
     }
