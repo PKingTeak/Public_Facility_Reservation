@@ -5,6 +5,9 @@ package com.example.reservation.Facility;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.example.reservation.Facility.Exception.DuplicateDataException;
+import com.example.reservation.Facility.Exception.InvalidRequestException;
+
 
 public class Reservation {
 
@@ -119,7 +122,7 @@ public class Reservation {
 
     public void cancel() {
         if (this.status == ReservationStatus.CANCELLED) {
-            throw new IllegalStateException("이미 취소된 예약입니다.");
+          throw new DuplicateDataException("이미 취소된 예약건 입니다.");
         }
 
         this.status = ReservationStatus.CANCELLED;

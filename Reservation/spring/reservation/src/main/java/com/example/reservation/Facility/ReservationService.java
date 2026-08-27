@@ -8,6 +8,8 @@ import java.util.Collection;
 import org.springframework.stereotype.Service;
 
 import com.example.reservation.Facility.DTO.ReservationRequest;
+import com.example.reservation.Facility.Exception.DataNotFoundException;
+import com.example.reservation.Facility.Exception.DuplicateDataException;
 import com.example.reservation.Facility.Reservation.ReservationStatus;
 
 import java.time.LocalDate;
@@ -40,7 +42,7 @@ public class ReservationService {
         Facility facility = facilityService.geFacilityInfoById(_request.getFailityId());
         System.out.println("받은 userId = " + _request.getUserId());
         if (user == null || facility == null) {
-            throw new IllegalStateException("user 혹은 facility가 null입니다");
+            throw new DataNotFoundException("user 혹은 facility가 null입니다");
         }
         if (arr == null) // 배열이 존재하지 않을때 해당 날짜에 아무것도 없을때 
         {
@@ -62,7 +64,7 @@ public class ReservationService {
 
             if (res.getReservationFacilityId() == _request.getFailityId()) {
                 if (res.getReservationTimeSlot().overlap(_request.getStartTime(), _request.getEndTime())) {
-                    throw new IllegalStateException("해당 시간은 이미 예약이 되어있습니다.");
+                   throw new DuplicateDataException("해당 시간은 이미 예약이 되어있습니다.");
                 }
             }
         }
@@ -84,7 +86,7 @@ public class ReservationService {
             Reservation res = new Reservation(totalScheduleNum, _user, _Facility, _date, _startTime, _endTime); // 객체 생성
             schedule.put(_date, arr);
             arr.add(res);
-            System.out.print(res.getReservationFacilityName());
+            
             totalScheduleNum++;
             return;
         }
@@ -99,7 +101,8 @@ public class ReservationService {
 
                 // 해당 시설 조회 + 예약 시간 비교
                 if (res.getReservationTimeSlot().overlap(_startTime, _endTime)) {
-                    throw new IllegalStateException("해당 시간은 이미 예약이 되어있습니다");
+                    //throw new IllegalStateException("해당 시간은 이미 예약이 되어있습니다");
+                    throw new DuplicateDataException("해당 시간은 이미 예약이 되어있습니다.");
                 }
             }
         }
@@ -128,8 +131,7 @@ public class ReservationService {
             }
         }
 
-        System.out.print("해당 스케쥴은 해당하는 예약이 존재하지 않습니다.");
-        return;
+        throw new DataNotFoundException("해당 스케쥴은 해당하는 예약이 없습니다");
     }
 //#endregion
 

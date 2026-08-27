@@ -1,6 +1,10 @@
 package com.example.reservation.Facility;
 
 import org.springframework.stereotype.Service;
+
+import com.example.reservation.Facility.Exception.DataNotFoundException;
+import com.example.reservation.Facility.Exception.GlobalExceptionHandler;
+
 import java.util.HashMap;
 import java.util.Collection;
 
@@ -31,7 +35,7 @@ public class FacilityService  {
     public void removeFacility(long _id) // 해당 시설이 폐쇄되었을때
     {
         if (!facilityMaps.containsKey(_id)) {
-            throw new IllegalStateException("해당 아이디는 존재하지 않습니다.");
+           throw new DataNotFoundException("해당 시설은 폐쇄되었습니다.");
         }
         facilityMaps.remove(_id);
     }
