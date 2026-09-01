@@ -5,28 +5,53 @@ package com.example.reservation.Facility;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+
 import com.example.reservation.Facility.Exception.DuplicateDataException;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
+
+
+@Entity
 public class Reservation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; // 예약번호
+    @ManyToOne
     private User user;
+    @ManyToOne
     private Facility facility;
     private LocalDate  date; // 시간대 별로 나눌예정
     private ReservationStatus status;
+    @Embedded
     private TimeSlot resTimeSlot = new TimeSlot();
-
+    
     // 번호는 자동으로 순차적으로 발급 되는식으로 구현
-
+    
     public enum ReservationStatus {
         RESERVED,
         CANCELLED
     }
 
-    public class TimeSlot {
+    protected Reservation() {
+        // JPA requires a default constructor
+    }
+    
+    @Embeddable
+    public static class TimeSlot {
         private LocalTime startTime;
         private LocalTime endTime;
+
+        protected TimeSlot() {
+            // JPA requires a default constructor
+        }
 
         public void setTimeSlot(LocalTime _starTime, LocalTime _endTime) {
             if (!_starTime.isBefore(_endTime)) {
@@ -66,9 +91,8 @@ public class Reservation {
         }
     }
 
-    public Reservation(long _id, User _user, Facility _facility, LocalDate _date, LocalTime _starTime,
+    public Reservation( User _user, Facility _facility, LocalDate _date, LocalTime _starTime,
             LocalTime _endTime) {
-        this.id = _id;
         this.user = _user;
         this.facility = _facility;
         this.date = _date;
@@ -82,7 +106,7 @@ public class Reservation {
         return this.id;
     }
 
-    public long getReseravtoinUserId() {
+    public long getReservationByUserId() {
         return user.getId();
     }
 

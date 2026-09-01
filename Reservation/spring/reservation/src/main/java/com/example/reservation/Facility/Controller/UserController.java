@@ -40,9 +40,15 @@ public class UserController {
     }
 
     @GetMapping("/by-name")
-    public long getUserDataByName(@RequestParam  String username)
+    public User getUserDataByName(@RequestParam  String username)
     {
         return userService.getUserByName(username);
+    }
+
+    @GetMapping("/id-by-name")
+    public Long getUserIdByName(@RequestParam String username)
+    {
+        return userService.getUserIdByName(username);
     }
 
     @GetMapping

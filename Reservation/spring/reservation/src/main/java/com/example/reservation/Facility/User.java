@@ -1,18 +1,30 @@
 package com.example.reservation.Facility;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class User
 {
-    static long totalUserCounter = 0;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; 
     private String name;
     private int age;
     //성별
     
 
+    protected User() {
+        // JPA requires a default constructor
+    
+    
+    }
+
     public User(String _name, int _age)
     {
-        totalUserCounter++;
-        this.id = totalUserCounter;
         this.name = _name;
         this.age = _age;
     }

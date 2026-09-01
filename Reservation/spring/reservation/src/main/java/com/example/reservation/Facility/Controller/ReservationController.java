@@ -2,8 +2,7 @@ package com.example.reservation.Facility.Controller;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,16 +36,16 @@ public class ReservationController {
     }
     
     @GetMapping("/{date}")
-    public ArrayList<Reservation> getReservationByDate(@PathVariable LocalDate date)
+    public List<Reservation> getReservationByDate(@PathVariable LocalDate date)
     {
         return reservationService.getReservationsByDate(date);
     }
 
     
     @GetMapping
-    public Collection<ArrayList<Reservation>> getAllReservation()
+    public List<Reservation> getAllReservationByDate(LocalDate _date)
     {
-        return reservationService.getAllReservation();
+        return reservationService.getAllReservationByDate(_date);
     }
     
     

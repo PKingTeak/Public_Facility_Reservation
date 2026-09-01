@@ -12,7 +12,7 @@ public class ReservationRequest {
     private LocalTime startTime;
     private LocalTime endTime;
 
-    public void getUserId(long _userId)
+    public void setUserId(long _userId)
     {
         userId = _userId;
     }
@@ -20,6 +20,7 @@ public class ReservationRequest {
     {
         facilityId = _facilityId;
     }
+
     public void setDate(LocalDate _date)
     {
         date = _date;
