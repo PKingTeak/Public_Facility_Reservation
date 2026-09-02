@@ -10,9 +10,10 @@ import com.example.reservation.Facility.Reservation;
 
 public interface ReservationRepository extends JpaRepository<Reservation,Long>{
     
-    List<Reservation> getReservationByFacilityId(Long facilityId,LocalDate _Date);
-    List<Reservation> getReservationByFacilityName(String facilityName , LocalDate _Date);
-    List<Reservation> getReservationByUserId(Long userId,LocalDate _Date);
+    List<Reservation> getReservationByFacilityIdAndDate(Long facilityId,LocalDate _Date);
+    List<Reservation> getReservationByFacilityNameAndDate(String facilityName , LocalDate _Date);
+    List<Reservation> getReservationByUserIdAndDate(Long userId,LocalDate _Date);
 
     List<Reservation> getReservationByDate(LocalDate _Date);
+
 }

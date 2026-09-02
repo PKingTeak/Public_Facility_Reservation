@@ -29,7 +29,16 @@ public class ReservationController {
         this.reservationService = _ReservationService;
     }
 
-    @GetMapping("/{date}/{id}")
+
+    
+    @PostMapping
+    public void addReserVation(@RequestBody ReservationRequest request)
+    {
+        reservationService.addReservation(request); //오버라이드로 하나 생성해서 값 넣어주는방식으로 수정할 예정
+    }
+
+
+    @GetMapping("date/{date}/reservation/{id}")
     public Reservation selectReservation(@PathVariable LocalDate date,@PathVariable long id)
     {
         return reservationService.getReservation(date, id);
@@ -42,24 +51,24 @@ public class ReservationController {
     }
 
     
-    @GetMapping
+    @GetMapping("AllData/{date}")
     public List<Reservation> getAllReservationByDate(LocalDate _date)
     {
         return reservationService.getAllReservationByDate(_date);
     }
     
-    
-    
-    @PostMapping
-    public void addReserVation(@RequestBody ReservationRequest request)
+
+    @GetMapping("/{facilityId}/{date}")
+    public List<Reservation> getReservationsByFacilityAndDate( @PathVariable long facilityId,@PathVariable LocalDate date)
     {
-        reservationService.addReservation(request); //오버라이드로 하나 생성해서 값 넣어주는방식으로 수정할 예정
+        return reservationService.getReservationsByFacilityAndDate(facilityId,date);
     }
+
     
-    @DeleteMapping("/{date}/{id}")
-    public void cancelReservation(@PathVariable LocalDate date,@PathVariable long id)
+    @DeleteMapping("/{id}")
+    public void cancelReservation(@PathVariable long id)
     {
-        reservationService.cancelReservation(date, id);
+        reservationService.cancelReservation(id);
     }
     
     

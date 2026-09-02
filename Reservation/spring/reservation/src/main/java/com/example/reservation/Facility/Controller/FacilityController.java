@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
+
 //HTTP에서 요청을 처리 및 상호작용
 @RestController
 @RequestMapping("/facility")
@@ -35,8 +36,7 @@ public class FacilityController {
         return facilityservice.getFacilityNameById(id);
     }
     
-
-
+  
 
 
     

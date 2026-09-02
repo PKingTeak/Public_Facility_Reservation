@@ -4,6 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <title>시설 예약 시스템</title>
+
+    <style>
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+            max-width: 850px;
+            margin-bottom: 18px;
+        }
+
+        .time-block {
+            min-height: 56px;
+            padding: 8px;
+            border: 1px solid #999;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            white-space: pre-line;
+        }
+
+        .time-block.selected {
+            border: 2px solid #222;
+            font-weight: bold;
+        }
+
+        .time-block:disabled {
+            background: #e8e8e8;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+    </style>
+
 </head>
 
 <body onload="loadFacilities()">
@@ -24,7 +56,7 @@
     <div>
         <label for="facilitySelect">시설 선택</label>
 
-        <select id="facilitySelect">
+        <select id="facilitySelect" onchange="loadTimeBlocks()">
             <option value="">시설을 선택하세요</option>
         </select>
     </div>
@@ -34,50 +66,20 @@
     <div>
         <label for="reservationDate">예약 날짜</label>
 
-        <input type="date" id="reservationDate" onchange="showTimeSelect()">
+        <input type="date" id="reservationDate" onchange="loadTimeBlocks()">
     </div>
 
     <br>
 
-    <!-- 날짜를 선택하면 표시 -->
+    <!-- 시설 + 날짜를 선택하면 1시간 단위 예약 블록 표시 -->
     <div id="timeSelectArea" style="display: none;">
+        <h3>시작 시간</h3>
+        <div id="startTimeBlocks" class="time-grid"></div>
 
-        <label for="startTime">시작시간</label>
+        <h3>끝나는 시간</h3>
+        <div id="endTimeBlocks" class="time-grid"></div>
 
-        <select id="startTime">
-            <option value="">시작시간 선택</option>
-
-            <option value="09:00">09:00</option>
-            <option value="10:00">10:00</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
-            <option value="14:00">14:00</option>
-            <option value="15:00">15:00</option>
-            <option value="16:00">16:00</option>
-            <option value="17:00">17:00</option>
-            <option value="18:00">18:00</option>
-        </select>
-
-        <span> ~ </span>
-
-        <label for="endTime">종료시간</label>
-
-        <select id="endTime">
-            <option value="">종료시간 선택</option>
-
-            <option value="10:00">10:00</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
-            <option value="14:00">14:00</option>
-            <option value="15:00">15:00</option>
-            <option value="16:00">16:00</option>
-            <option value="17:00">17:00</option>
-            <option value="18:00">18:00</option>
-            <option value="19:00">19:00</option>
-        </select>
-
+        <p id="selectedTimeSummary">시간을 선택해주세요.</p>
     </div>
 
     <br>
@@ -182,30 +184,184 @@
 
 
         // ==================================================
-        // 날짜 선택 시 시간 메뉴 표시
+        // 1시간 단위 시간 블록
         // ==================================================
 
-        function showTimeSelect() {
-            const date =
-                document.getElementById(
-                    "reservationDate"
-                ).value;
+        let selectedStartTime = "";
+        let selectedEndTime = "";
+        let currentFacilityReservations = [];
 
+        function hourText(hour) {
+            return String(hour).padStart(2, "0") + ":00";
+        }
 
-            const timeArea =
-                document.getElementById(
-                    "timeSelectArea"
-                );
+        function timeToMinutes(time) {
+            const parts = time.split(":");
+            return Number(parts[0]) * 60 + Number(parts[1]);
+        }
 
+        function overlaps(startA, endA, startB, endB) {
+            return timeToMinutes(startA) < timeToMinutes(endB)
+                && timeToMinutes(endA) > timeToMinutes(startB);
+        }
 
-            if (date !== "") {
-                timeArea.style.display = "block";
+        function loadTimeBlocks() {
+            const facilityId = document.getElementById("facilitySelect").value;
+            const date = document.getElementById("reservationDate").value;
+            const area = document.getElementById("timeSelectArea");
+
+            selectedStartTime = "";
+            selectedEndTime = "";
+            currentFacilityReservations = [];
+
+            if (facilityId === "" || date === "") {
+                area.style.display = "none";
+                return;
             }
-            else {
-                timeArea.style.display = "none";
+
+            area.style.display = "block";
+
+            fetch("/reservation/" + date)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("예약 조회 실패");
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    currentFacilityReservations = data.filter(reservation =>
+                        reservation.status !== "CANCELLED"
+                        && Number(reservation.reservationFacilityId) === Number(facilityId)
+                    );
+
+                    renderStartTimeBlocks();
+                    renderEndTimeBlocks();
+                    updateSelectedTimeSummary();
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById("startTimeBlocks").innerText =
+                        "예약 현황을 불러오지 못했습니다.";
+                });
+        }
+
+        function findReservationForSlot(slotStart, slotEnd) {
+            return currentFacilityReservations.find(reservation =>
+                overlaps(
+                    slotStart,
+                    slotEnd,
+                    reservation.startTime,
+                    reservation.endTime
+                )
+            );
+        }
+
+        function renderStartTimeBlocks() {
+            const container = document.getElementById("startTimeBlocks");
+            container.innerHTML = "";
+
+            for (let hour = 9; hour < 19; hour++) {
+                const start = hourText(hour);
+                const end = hourText(hour + 1);
+                const reservation = findReservationForSlot(start, end);
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "time-block";
+
+                if (reservation) {
+                    button.disabled = true;
+                    button.textContent =
+                        start
+                        + "\n" + reservation.reservationUserName + " 예약";
+                } else {
+                    button.textContent = start;
+
+                    if (selectedStartTime === start) {
+                        button.classList.add("selected");
+                    }
+
+                    button.onclick = function () {
+                        selectedStartTime = start;
+                        selectedEndTime = "";
+
+                        renderStartTimeBlocks();
+                        renderEndTimeBlocks();
+                        updateSelectedTimeSummary();
+                    };
+                }
+
+                container.appendChild(button);
             }
         }
 
+        function renderEndTimeBlocks() {
+            const container = document.getElementById("endTimeBlocks");
+            container.innerHTML = "";
+
+            for (let hour = 10; hour <= 19; hour++) {
+                const end = hourText(hour);
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "time-block";
+                button.textContent = end;
+
+                if (selectedStartTime === "") {
+                    button.disabled = true;
+                    container.appendChild(button);
+                    continue;
+                }
+
+                if (timeToMinutes(end) <= timeToMinutes(selectedStartTime)) {
+                    button.disabled = true;
+                    container.appendChild(button);
+                    continue;
+                }
+
+                const conflict = currentFacilityReservations.find(reservation =>
+                    overlaps(
+                        selectedStartTime,
+                        end,
+                        reservation.startTime,
+                        reservation.endTime
+                    )
+                );
+
+                if (conflict) {
+                    button.disabled = true;
+                    button.textContent =
+                        end + "\n" + conflict.reservationUserName + " 예약과 겹침";
+                } else {
+                    if (selectedEndTime === end) {
+                        button.classList.add("selected");
+                    }
+
+                    button.onclick = function () {
+                        selectedEndTime = end;
+                        renderEndTimeBlocks();
+                        updateSelectedTimeSummary();
+                    };
+                }
+
+                container.appendChild(button);
+            }
+        }
+
+        function updateSelectedTimeSummary() {
+            const summary = document.getElementById("selectedTimeSummary");
+
+            if (selectedStartTime === "") {
+                summary.innerText = "시간을 선택해주세요.";
+            } else if (selectedEndTime === "") {
+                summary.innerText =
+                    "시작 시간: " + selectedStartTime + " / 끝나는 시간을 선택해주세요.";
+            } else {
+                summary.innerText =
+                    "선택 시간: " + selectedStartTime + " ~ " + selectedEndTime;
+            }
+        }
 
 
         // ==================================================
@@ -232,16 +388,8 @@
                 ).value;
 
 
-            const startTime =
-                document.getElementById(
-                    "startTime"
-                ).value;
-
-
-            const endTime =
-                document.getElementById(
-                    "endTime"
-                ).value;
+            const startTime = selectedStartTime;
+            const endTime = selectedEndTime;
 
 
 
@@ -339,6 +487,8 @@
                             "reservationResult"
                         ).innerText =
                             "예약이 완료되었습니다.";
+
+                        loadTimeBlocks();
                     }
                     else {
                         document.getElementById(
@@ -564,7 +714,6 @@ function loadReservationsByDate()
                 button.onclick = function()
                 {
                     cancelReservation(
-                        date,
                         reservation.reservationId
                     );
                 };
@@ -594,17 +743,14 @@ function loadReservationsByDate()
 // 예약 취소
 // ==========================================
 
-function cancelReservation(date, reservationId)
+function cancelReservation(reservationId)
 {
     const result =
         document.getElementById("cancelResult");
 
 
     fetch(
-        "/reservation/"
-        + date
-        + "/"
-        + reservationId,
+        "/reservation/" + reservationId,
         {
             method: "DELETE"
         }

@@ -11,6 +11,8 @@ import com.example.reservation.Facility.Exception.DuplicateDataException;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,12 +31,12 @@ public class Reservation {
     @ManyToOne
     private Facility facility;
     private LocalDate  date; // 시간대 별로 나눌예정
+    @Enumerated(EnumType.STRING)
     private ReservationStatus status;
     @Embedded
     private TimeSlot resTimeSlot = new TimeSlot();
     
     // 번호는 자동으로 순차적으로 발급 되는식으로 구현
-    
     public enum ReservationStatus {
         RESERVED,
         CANCELLED
