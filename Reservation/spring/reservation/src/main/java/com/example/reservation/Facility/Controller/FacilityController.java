@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.reservation.Facility.Facility;
 import com.example.reservation.Facility.FacilityService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -32,7 +34,7 @@ public class FacilityController {
     }
 
     @GetMapping("/{id}")
-    public String getMethodName(@PathVariable long id) {
+    public String getMethodName(@Valid@PathVariable long id) {
         return facilityservice.getFacilityNameById(id);
     }
     

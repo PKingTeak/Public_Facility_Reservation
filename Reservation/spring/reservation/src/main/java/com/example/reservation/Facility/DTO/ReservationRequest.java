@@ -3,13 +3,24 @@ package com.example.reservation.Facility.DTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 
 public class ReservationRequest {
-   
+   //Vaildation을 사용하여 들어오는 값이 유효한 값인지 확인 
+    @Positive
     private long userId;
+    @Positive
     private long facilityId;
+    @NotNull 
     private LocalDate date;
+    @NotNull 
+    @FutureOrPresent
     private LocalTime startTime;
+    @NotNull
+    @FutureOrPresent 
     private LocalTime endTime;
 
     public void setUserId(long _userId)

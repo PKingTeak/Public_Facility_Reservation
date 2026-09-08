@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.reservation.Facility.Reservation;
 import com.example.reservation.Facility.ReservationService;
-import com.example.reservation.Facility.DTO.ReservationRequest;;;
+import com.example.reservation.Facility.DTO.ReservationRequest;
+
+import jakarta.validation.Valid;;;
 
 
 @RestController
@@ -30,9 +32,8 @@ public class ReservationController {
     }
 
 
-    
     @PostMapping
-    public void addReserVation(@RequestBody ReservationRequest request)
+    public void addReserVation(@Valid @RequestBody ReservationRequest request)
     {
         reservationService.addReservation(request); //오버라이드로 하나 생성해서 값 넣어주는방식으로 수정할 예정
     }

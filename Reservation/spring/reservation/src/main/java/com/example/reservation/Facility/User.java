@@ -6,14 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+
 @Entity
 public class User
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id; 
+    private long id;
     private String name;
     private int age;
+    private String email;
     //성별
     
 
@@ -23,10 +25,11 @@ public class User
     
     }
 
-    public User(String _name, int _age)
+    public User(String _name, int _age , String _email)
     {
         this.name = _name;
         this.age = _age;
+        this.email = _email;
     }
     
     public Long getUserId()
@@ -47,6 +50,11 @@ public class User
     public long getId()
     {
         return this.id;
+    }
+
+    public String getEmail()
+    {
+        return this.email;
     }
 
 }

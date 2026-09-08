@@ -30,7 +30,7 @@ public class UserService {
             throw new InvalidRequestException("잘못된 나이를 지정하였습니다");
         }
         
-        User user = new User(userRequest.getName(),userRequest.getAge());
+        User user = new User(userRequest.getName(),userRequest.getAge(),userRequest.getEmail());
         userRepository.save(user);
     }
 

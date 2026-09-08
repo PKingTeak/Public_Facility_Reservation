@@ -8,6 +8,8 @@ import com.example.reservation.Facility.User;
 import com.example.reservation.Facility.UserService;
 import com.example.reservation.Facility.DTO.UserRequest;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping
-    public void registerUser(@RequestBody UserRequest request)
+    public void registerUser(@Valid @RequestBody UserRequest request)
     {
         userService.registerUser(request);
     }
