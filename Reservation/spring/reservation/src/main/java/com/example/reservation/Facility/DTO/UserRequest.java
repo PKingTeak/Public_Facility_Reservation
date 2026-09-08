@@ -1,27 +1,24 @@
 package com.example.reservation.Facility.DTO;
 
-import com.example.reservation.Facility.Email;
-
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 public class UserRequest {
 
-    @NotNull 
+    @NotBlank 
     private String name;
-    @Email 
+    @Email
     @NotNull 
     private String email;
-    @Min (value = 0, message = "나이는 0보다 작을수 없습니다")
+    @Min (value = 1, message = "나이는 0보다 작을수 없습니다")
     private int age;
-    @Positive 
-    private long id;
+    
+    @NotBlank
+    private String password;
 
-    public long getId() {
-        return id;
-    }
-
+    
     public String getName() {
         return name;
     }
@@ -33,5 +30,10 @@ public class UserRequest {
     public String getEmail()
     {
         return email;
+    }
+
+    public String getPassword()
+    {
+        return password;
     }
 }

@@ -102,10 +102,13 @@
 
     <div>
         <input type="text" id="newNameInput" placeholder="이름">
-
+        
+        
         <input type="number" id="age" placeholder="나이">
-
+        
         <input type="email" id = "email" placeholder="이메일">
+        
+        <input type="password" id= "password" placeholder="비밀번호">
 
         <button onclick="newMemberShip()">
             회원가입
@@ -565,18 +568,22 @@
                 document.getElementById(
                     "email"
                 ).value;
+            const password = document.getElementById(
+                    "password"
+                ).value;
 
 
 
             if (
                 name === "" ||
                 age === "" ||
-                email === ""
+                email === ""||
+                password === ""
             ) {
                 document.getElementById(
                     "registerResult"
                 ).innerText =
-                    "이름과 나이, 이메일을 입력해주세요.";
+                    "이름과  나이, 이메일,비밀번호을 입력해주세요.";
 
                 return;
             }
@@ -601,7 +608,11 @@
                         age:
                             Number(age),
                             
-                        email : email
+                        email : email,
+                        
+                        password : password
+
+
 
 
                        

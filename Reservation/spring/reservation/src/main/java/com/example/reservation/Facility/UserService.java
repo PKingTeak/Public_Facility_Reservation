@@ -1,5 +1,6 @@
 package com.example.reservation.Facility;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.reservation.Facility.DTO.UserRequest;
@@ -9,17 +10,20 @@ import com.example.reservation.Facility.Repository.UserRepository;
 
 import java.util.Collection;
 
-
+//비즈니스 로직 담당 클래스 
 @Service
 public class UserService {
  
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; //비밀번호 암호화 객체
 
-    UserService(UserRepository _UserRepository)
+
+    UserService(UserRepository _UserRepository , PasswordEncoder _passwordEncoder)
     {
 
         userRepository = _UserRepository;
+        passwordEncoder = _passwordEncoder;
     }
 
 
@@ -29,8 +33,9 @@ public class UserService {
         {
             throw new InvalidRequestException("잘못된 나이를 지정하였습니다");
         }
-        
-        User user = new User(userRequest.getName(),userRequest.getAge(),userRequest.getEmail());
+        String inputpassword = passwordEncoder.encode(userRequest.getPassword()); //비밀번호 암호화 객체를 가져옴;
+        User user = new User(userRequest.getName(),userRequest.getAge(),userRequest.getEmail(),inputpassword); //User 비밀번호는 해시 문자열을 가지게 함.
+      
         userRepository.save(user);
     }
 
@@ -59,6 +64,10 @@ public class UserService {
     }
 
 
-
+    public User getUserByEmail(String email)
+    {
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new DataNotFoundException("해당 " + email +"에 일치하는 유저가 없습니다."));
+        return user;
+    }
 
 }
