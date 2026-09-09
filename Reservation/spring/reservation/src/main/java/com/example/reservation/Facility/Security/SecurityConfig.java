@@ -24,9 +24,9 @@ public class SecurityConfig {
             .requestMatchers("/Input.html",
                 "/users","/facility/**"
             ).permitAll()
-            .requestMatchers("/reservation/**").hasRole("/admin/**")
-				.anyRequest().authenticated()
-                
+             .requestMatchers("/admin/**").hasRole("ADMIN")
+
+    .anyRequest().authenticated()
 			
             )
             .formLogin(from -> from.permitAll());

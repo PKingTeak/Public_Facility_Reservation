@@ -10,6 +10,7 @@ import com.example.reservation.Facility.DTO.UserRequest;
 
 import jakarta.validation.Valid;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,16 @@ public class UserController {
     public void registerUser(@Valid @RequestBody UserRequest request)
     {
         userService.registerUser(request);
+    }
+    
+    @GetMapping("/me")
+    public String me(Authentication authentication) {
+     
+           return authentication.getName()
+        + " / "
+        + authentication.getAuthorities();
+
+    
     }
     
 
