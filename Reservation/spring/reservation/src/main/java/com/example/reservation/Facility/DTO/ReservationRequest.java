@@ -3,7 +3,6 @@ package com.example.reservation.Facility.DTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -14,13 +13,11 @@ public class ReservationRequest {
     private long userId;
     @Positive
     private long facilityId;
-    @NotNull 
+    @NotNull
     private LocalDate date;
     @NotNull 
-    @FutureOrPresent
     private LocalTime startTime;
     @NotNull
-    @FutureOrPresent 
     private LocalTime endTime;
 
     public void setUserId(long _userId)
@@ -56,7 +53,7 @@ public class ReservationRequest {
         return userId;
     }
 
-    public long getFailityId()
+    public long getFacilityId()
     {
         return facilityId;
     }

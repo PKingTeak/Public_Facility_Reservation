@@ -30,7 +30,7 @@ public class FacilityController {
     @GetMapping
     public Collection<Facility> getAllFacility()
     {
-        return facilityservice.getAllFacitiy();
+        return facilityservice.getAllFacilities();
     }
 
     @GetMapping("/{id}")

@@ -77,7 +77,7 @@ public class FacilityService  {
     }
 
 
-    public Collection<Facility> getAllFacitiy()
+    public Collection<Facility> getAllFacilities()
     {
         return facilityRepository.findAll();
     }

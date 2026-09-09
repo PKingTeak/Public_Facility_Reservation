@@ -43,13 +43,13 @@ public class ReservationService {
     @Transactional
     public void addReservation(ReservationRequest _request) {
         User user = userService.getUserById(_request.getUserId());
-        Facility facility = facilityService.geFacilityInfoById(_request.getFailityId());
+        Facility facility = facilityService.geFacilityInfoById(_request.getFacilityId());
         System.out.println("받은 userId = " + _request.getUserId());
         if (user == null || facility == null) {
             throw new DataNotFoundException("user 혹은 facility가 null입니다");
         }
 
-        List<Reservation> list = resRepository.getReservationByFacilityIdAndDate(_request.getFailityId(),
+        List<Reservation> list = resRepository.getReservationByFacilityIdAndDate(_request.getFacilityId(),
                 _request.getDate());
 
         for (Reservation reservation : list) {
