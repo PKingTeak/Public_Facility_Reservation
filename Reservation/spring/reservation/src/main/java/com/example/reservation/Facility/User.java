@@ -77,4 +77,9 @@ public class User
         return this.password;
     }
 
+    public void changeRole(Role _Role)
+    {
+        role = _Role;
+    }
+
 }

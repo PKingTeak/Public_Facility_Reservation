@@ -3,10 +3,13 @@ package com.example.reservation.Facility;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.reservation.Facility.Authorization.Role;
 import com.example.reservation.Facility.DTO.UserRequest;
 import com.example.reservation.Facility.Exception.DataNotFoundException;
 import com.example.reservation.Facility.Exception.InvalidRequestException;
 import com.example.reservation.Facility.Repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 import java.util.Collection;
 
@@ -68,6 +71,14 @@ public class UserService {
     {
         User user = userRepository.findByEmail(email).orElseThrow(()-> new DataNotFoundException("해당 " + email +"에 일치하는 유저가 없습니다."));
         return user;
+    }
+
+    @Transactional 
+    public void changeRole(Long id, Role _changeRole)
+    {
+      User user = userRepository.findById(id).orElseThrow(()-> new DataNotFoundException("해당하는 유저가 없습니다."));
+      user.changeRole(_changeRole);
+
     }
 
 }

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Collection;
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -53,11 +51,7 @@ public class UserController {
         return userService.getUserIdByName(username);
     }
 
-    @GetMapping
-    public Collection<User> getAllUserData()
-    {
-        return userService.getAllUserData();
-    }
+   
     
 
 }
