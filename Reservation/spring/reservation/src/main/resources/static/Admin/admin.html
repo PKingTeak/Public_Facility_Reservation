@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .role-menu {
+            display: none;
+            margin-top: 8px;
+        }
+
+        button {
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+
+        select {
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>관리자 페이지</h1>
+
+    <h2>사용자 권한 관리</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>사용자 ID</th>
+                <th>이름</th>
+                <th>나이</th>
+                <th>이메일</th>
+                <th>현재 권한</th>
+                <th>권한 변경</th>
+            </tr>
+        </thead>
+
+        <tbody id="userTableBody">
+        </tbody>
+    </table>
+
+
+    <script>
+
+        // ==========================================
+        // 사용자 목록 조회
+        // GET /admin/users
+        // ==========================================
+
+        function loadUsers() {
+
+            fetch("/admin/users")
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error("사용자 목록 조회 실패");
+                    }
+
+                    return response.json();
+                })
+
+                .then(users => {
+
+                    const tableBody =
+                        document.getElementById("userTableBody");
+
+                    tableBody.innerHTML = "";
+
+                    users.forEach(user => {
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        // ID
+                        const idCell =
+                            document.createElement("td");
+
+                        idCell.textContent = user.id;
+
+
+                        // 이름
+                        const nameCell =
+                            document.createElement("td");
+
+                        nameCell.textContent = user.name;
+
+
+                        // 나이
+                        const ageCell =
+                            document.createElement("td");
+
+                        ageCell.textContent = user.age;
+
+
+                        // 이메일
+                        const emailCell =
+                            document.createElement("td");
+
+                        emailCell.textContent = user.email;
+
+
+                        // 현재 권한
+                        const roleCell =
+                            document.createElement("td");
+
+                        roleCell.textContent = user.role;
+
+                        roleCell.id =
+                            "role-" + user.id;
+
+
+                        // 권한 변경 영역
+                        const changeCell =
+                            document.createElement("td");
+
+
+                        // 권한 변경 버튼
+                        const changeButton =
+                            document.createElement("button");
+
+                        changeButton.textContent =
+                            "권한 변경";
+
+
+                        // 숨겨져 있는 메뉴 영역
+                        const roleMenu =
+                            document.createElement("div");
+
+                        roleMenu.className =
+                            "role-menu";
+
+
+                        // USER / ADMIN 선택 메뉴
+                        const roleSelect =
+                            document.createElement("select");
+
+
+                        const userOption =
+                            document.createElement("option");
+
+                        userOption.value = "USER";
+                        userOption.textContent = "USER";
+
+
+                        const adminOption =
+                            document.createElement("option");
+
+                        adminOption.value = "ADMIN";
+                        adminOption.textContent = "ADMIN";
+
+
+                        roleSelect.appendChild(userOption);
+                        roleSelect.appendChild(adminOption);
+
+
+                        // 현재 권한을 기본 선택
+                        roleSelect.value = user.role;
+
+
+                        // 적용 버튼
+                        const applyButton =
+                            document.createElement("button");
+
+                        applyButton.textContent =
+                            "적용";
+
+
+                        // 권한 변경 메뉴 열기/닫기
+                        changeButton.onclick = function () {
+
+                            if (roleMenu.style.display === "block") {
+                                roleMenu.style.display = "none";
+                            }
+                            else {
+                                roleMenu.style.display = "block";
+                            }
+                        };
+
+
+                        // 실제 권한 변경
+                        applyButton.onclick = function () {
+
+                            changeRole(
+                                user.id,
+                                roleSelect.value
+                            );
+                        };
+
+
+                        roleMenu.appendChild(roleSelect);
+                        roleMenu.appendChild(applyButton);
+
+                        changeCell.appendChild(changeButton);
+                        changeCell.appendChild(roleMenu);
+
+
+                        row.appendChild(idCell);
+                        row.appendChild(nameCell);
+                        row.appendChild(ageCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(roleCell);
+                        row.appendChild(changeCell);
+
+
+                        tableBody.appendChild(row);
+                    });
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    alert(
+                        "사용자 정보를 불러오지 못했습니다."
+                    );
+                });
+        }
+
+
+
+        // ==========================================
+        // 사용자 권한 변경
+        // PATCH /admin/users/{id}/role
+        // ==========================================
+
+        function changeRole(userId, newRole) {
+
+            fetch(
+                "/admin/users/" + userId + "/role",
+                {
+                    method: "PATCH",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                            "X-XSRF-TOKEN": getcookie("XSRF_TOKEN")
+
+                    },
+
+                    body: JSON.stringify({
+                        role: newRole
+                    })
+                }
+            )
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(
+                            "권한 변경 실패"
+                        );
+                    }
+
+
+                    // 현재 화면의 권한 표시 변경
+                    document.getElementById(
+                        "role-" + userId
+                    ).textContent = newRole;
+
+
+                    alert(
+                        "권한이 "
+                        + newRole
+                        + "으로 변경되었습니다."
+                    );
+
+
+                    // DB 상태를 다시 읽어오기
+                    loadUsers();
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    alert(
+                        "권한 변경에 실패했습니다."
+                    );
+                });
+        }
+
+        function getCookie(name) {
+            const value = document.cookie.split("; ").find(row => row.startsWith(name + "="));
+
+            return value ? decodeURIComponent(value.split("=")[1]) : null;
+        }
+
+        // 페이지 열릴 때 사용자 목록 조회
+        window.onload = loadUsers;
+
+    </script>
+
+</body>
+
+</html>

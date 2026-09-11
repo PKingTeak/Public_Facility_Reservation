@@ -45,7 +45,9 @@
     <!-- =========================
          예약 영역
     ========================== -->
-
+    <button onclick="location.href='/admin/Admin.html'">
+        관리자 페이지
+    </button>
     <div>
         <label for="nameInput">예약자 이름</label>
         <input type="text" id="nameInput" placeholder="이름을 입력하세요">
@@ -102,13 +104,13 @@
 
     <div>
         <input type="text" id="newNameInput" placeholder="이름">
-        
-        
+
+
         <input type="number" id="age" placeholder="나이">
-        
-        <input type="email" id = "email" placeholder="이메일">
-        
-        <input type="password" id= "password" placeholder="비밀번호">
+
+        <input type="email" id="email" placeholder="이메일">
+
+        <input type="password" id="password" placeholder="비밀번호">
 
         <button onclick="newMemberShip()">
             회원가입
@@ -455,7 +457,8 @@
 
                             headers: {
                                 "Content-Type":
-                                    "application/json"
+                                    "application/json",
+                                "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
                             },
 
                             body: JSON.stringify({
@@ -563,21 +566,21 @@
                 document.getElementById(
                     "age"
                 ).value;
-            
-                const email = 
+
+            const email =
                 document.getElementById(
                     "email"
                 ).value;
             const password = document.getElementById(
-                    "password"
-                ).value;
+                "password"
+            ).value;
 
 
 
             if (
                 name === "" ||
                 age === "" ||
-                email === ""||
+                email === "" ||
                 password === ""
             ) {
                 document.getElementById(
@@ -597,7 +600,8 @@
 
                     headers: {
                         "Content-Type":
-                            "application/json"
+                            "application/json",
+                        "X-XSRF-TOKEN": getCookie("XSRF_TOKEN")
                     },
 
                     body: JSON.stringify({
@@ -607,15 +611,15 @@
 
                         age:
                             Number(age),
-                            
-                        email : email,
-                        
-                        password : password
+
+                        email: email,
+
+                        password: password
 
 
 
 
-                       
+
                     })
                 }
             )
@@ -664,150 +668,156 @@
 
 
         // ==========================================
-// 선택한 날짜의 예약 목록 조회
-// ==========================================
+        // 선택한 날짜의 예약 목록 조회
+        // ==========================================
 
-function loadReservationsByDate()
-{
-    const date =
-        document.getElementById("cancelDate").value;
+        function loadReservationsByDate() {
+            const date =
+                document.getElementById("cancelDate").value;
 
-    const list =
-        document.getElementById("reservationList");
-
-
-    // 기존 목록 초기화
-    list.innerHTML = "";
+            const list =
+                document.getElementById("reservationList");
 
 
-    if (date === "")
-    {
-        return;
-    }
+            // 기존 목록 초기화
+            list.innerHTML = "";
 
 
-    fetch("/reservation/" + date)
-
-        .then(response => {
-
-            if (!response.ok)
-            {
-                throw new Error("예약 조회 실패");
-            }
-
-            return response.json();
-        })
-
-        .then(data => {
-
-            // 해당 날짜에 예약이 하나도 없는 경우
-            if (data.length === 0)
-            {
-                list.innerText =
-                    "해당 날짜에 예약이 없습니다.";
-
+            if (date === "") {
                 return;
             }
 
 
-            data.forEach(reservation => {
+            fetch("/reservation/" + date)
 
-                // 이미 취소된 예약은 표시하지 않음
-                if (reservation.status === "CANCELLED")
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error("예약 조회 실패");
+                    }
+
+                    return response.json();
+                })
+
+                .then(data => {
+
+                    // 해당 날짜에 예약이 하나도 없는 경우
+                    if (data.length === 0) {
+                        list.innerText =
+                            "해당 날짜에 예약이 없습니다.";
+
+                        return;
+                    }
+
+
+                    data.forEach(reservation => {
+
+                        // 이미 취소된 예약은 표시하지 않음
+                        if (reservation.status === "CANCELLED") {
+                            return;
+                        }
+
+
+                        const button =
+                            document.createElement("button");
+
+
+                        // 화면에 표시할 내용
+                        button.textContent =
+                            reservation.reservationFacilityName
+                            + " / "
+                            + reservation.reservationUserName
+                            + " / "
+                            + reservation.startTime
+                            + " : "
+                            + reservation.endTime
+
+
+                        // 버튼 클릭 → 해당 예약 취소
+                        button.onclick = function () {
+                            cancelReservation(
+                                reservation.reservationId
+                            );
+                        };
+
+
+                        list.appendChild(button);
+                        list.appendChild(
+                            document.createElement("br")
+                        );
+                    });
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    list.innerText =
+                        "예약 목록을 불러오지 못했습니다.";
+
+                });
+        }
+
+
+
+        // ==========================================
+        // 예약 취소
+        // ==========================================
+
+        function cancelReservation(reservationId) {
+            const result =
+                document.getElementById("cancelResult");
+
+
+            fetch(
+                "/reservation/" + reservationId,
                 {
-                    return;
+                    method: "DELETE",
+                    headers: 
+                    {
+                        "X-XSRF-TOKEN" : getCookie("XSRF_TOKEN")
+                    }
+
                 }
+            )
+
+                .then(response => {
+
+                    if (response.ok) {
+                        result.innerText =
+                            "예약이 취소되었습니다.";
 
 
-                const button =
-                    document.createElement("button");
+                        // 취소 후 목록 다시 불러오기
+                        loadReservationsByDate();
+                    }
+                    else {
+                        result.innerText =
+                            "예약 취소에 실패했습니다.";
+                    }
 
+                })
 
-                // 화면에 표시할 내용
-                button.textContent =
-                    reservation.reservationFacilityName
-                    + " / "
-                    + reservation.reservationUserName
-                    + " / "
-                    + reservation.startTime
-                    + " : "
-                    + reservation.endTime
+                .catch(error => {
 
+                    console.error(error);
 
-                // 버튼 클릭 → 해당 예약 취소
-                button.onclick = function()
-                {
-                    cancelReservation(
-                        reservation.reservationId
-                    );
-                };
+                    result.innerText =
+                        "서버 요청 중 오류가 발생했습니다.";
 
-
-                list.appendChild(button);
-                list.appendChild(
-                    document.createElement("br")
-                );
-            });
-
-        })
-
-        .catch(error => {
-
-            console.error(error);
-
-            list.innerText =
-                "예약 목록을 불러오지 못했습니다.";
-
-        });
-}
-
-
-
-// ==========================================
-// 예약 취소
-// ==========================================
-
-function cancelReservation(reservationId)
-{
-    const result =
-        document.getElementById("cancelResult");
-
-
-    fetch(
-        "/reservation/" + reservationId,
-        {
-            method: "DELETE"
-        }
-    )
-
-    .then(response => {
-
-        if (response.ok)
-        {
-            result.innerText =
-                "예약이 취소되었습니다.";
-
-
-            // 취소 후 목록 다시 불러오기
-            loadReservationsByDate();
-        }
-        else
-        {
-            result.innerText =
-                "예약 취소에 실패했습니다.";
+                });
         }
 
-    })
 
-    .catch(error => {
+        // ==============================
+        // CSRF 토큰 XSRF_TOKEN
+        // ==============================
+        function getCookie(name) {
+            const value = document.cookie.split("; ").find(row => row.startsWith(name + "="));
 
-        console.error(error);
-
-        result.innerText =
-            "서버 요청 중 오류가 발생했습니다.";
-
-    });
-}
+            return value ? decodeURIComponent(value.split("=")[1]) : null;
+        }
     </script>
 
 </body>

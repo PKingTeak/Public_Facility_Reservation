@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Positive;
 public class ReservationRequest {
    //Vaildation을 사용하여 들어오는 값이 유효한 값인지 확인 
     @Positive
-    private long userId;
+    private long userId; //이걸 구지 클라이언트가 ID를 정하는게 맞나?
     @Positive
     private long facilityId;
     @NotNull

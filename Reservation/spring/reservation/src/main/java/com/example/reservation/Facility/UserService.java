@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.reservation.Facility.Authorization.Role;
+import com.example.reservation.Facility.DTO.AdminUserResponse;
 import com.example.reservation.Facility.DTO.UserRequest;
 import com.example.reservation.Facility.Exception.DataNotFoundException;
 import com.example.reservation.Facility.Exception.InvalidRequestException;
@@ -12,6 +13,7 @@ import com.example.reservation.Facility.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 //비즈니스 로직 담당 클래스 
 @Service
@@ -79,6 +81,26 @@ public class UserService {
       User user = userRepository.findById(id).orElseThrow(()-> new DataNotFoundException("해당하는 유저가 없습니다."));
       user.changeRole(_changeRole);
 
+    }
+
+
+    public AdminUserResponse getUserDataFromAdmin(Long _userID)
+    {
+        User user = userRepository.findById(_userID).orElseThrow(()-> new DataNotFoundException("해당 유저가 없습니다. "));
+        AdminUserResponse output =  new AdminUserResponse(user.getId(),user.getName(),user.getEmail(),user.getAge(),user.getRole());
+
+        return output;
+    }
+
+    public Collection<AdminUserResponse> getAllUserDataFromAdmin()
+    {
+        Collection<User> users = userRepository.findAll();
+        Collection<AdminUserResponse> outputs = new ArrayList<>();
+        for (User user : users) {
+            outputs.add(getUserDataFromAdmin(user.getUserId()));
+        }
+    
+        return outputs;
     }
 
 }

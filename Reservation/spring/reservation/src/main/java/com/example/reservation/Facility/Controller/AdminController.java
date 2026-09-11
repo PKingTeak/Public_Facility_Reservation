@@ -1,7 +1,7 @@
 package com.example.reservation.Facility.Controller;
 
-import com.example.reservation.Facility.User;
 import com.example.reservation.Facility.UserService;
+import com.example.reservation.Facility.DTO.AdminUserResponse;
 import com.example.reservation.Facility.DTO.RoleChangeRequest;
 
 import jakarta.validation.Valid;
@@ -32,9 +32,9 @@ public class AdminController {
 
     
     @GetMapping("users/{id}")
-    public User getuserbyID(@PathVariable Long id)
+    public AdminUserResponse getuserbyID(@PathVariable Long id)
     {
-        return service.getUserById(id);       
+        return service.getUserDataFromAdmin(id);       
     }   
 
     @PatchMapping("/users/{id}/role")
@@ -45,9 +45,10 @@ public class AdminController {
     
      
     @GetMapping("/users")
-    public Collection<User> getAllUserData()
+    public Collection<AdminUserResponse> getAllUserData()
     {
-        return service.getAllUserData();
+        return service.getAllUserDataFromAdmin();
+        
     }
     
 
