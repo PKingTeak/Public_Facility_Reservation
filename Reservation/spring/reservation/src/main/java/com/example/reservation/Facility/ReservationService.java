@@ -9,11 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.reservation.Facility.DTO.ReservationRequest;
 import com.example.reservation.Facility.Exception.DataNotFoundException;
 import com.example.reservation.Facility.Exception.DuplicateDataException;
+import com.example.reservation.Facility.Exception.InvalidRequestException;
 import com.example.reservation.Facility.Repository.ReservationRepository;
 
-
 import java.time.LocalDate;
-
 
 @Service
 public class ReservationService {
@@ -41,10 +40,10 @@ public class ReservationService {
     // #region 오버라이드 함수
     // 해당 기관 정보 조회 Spring 연동
     @Transactional
-    public void addReservation(ReservationRequest _request) {
-        User user = userService.getUserById(_request.getUserId());
+    public void addReservation(ReservationRequest _request, String userEmail) {
+        User user = userService.getUserByEmail(userEmail);
         Facility facility = facilityService.geFacilityInfoById(_request.getFacilityId());
-        System.out.println("받은 userId = " + _request.getUserId());
+
         if (user == null || facility == null) {
             throw new DataNotFoundException("user 혹은 facility가 null입니다");
         }
@@ -66,7 +65,6 @@ public class ReservationService {
 
     }
 
-    
     // #endregion
 
     public Reservation getReservation(LocalDate _date, long _reservationId) {
@@ -78,30 +76,35 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancelReservation(Long _reservationId) {
-        
-        if (resRepository.existsById(_reservationId)) {
-            Reservation res = resRepository.findById(_reservationId).get();
-            res.cancel();
-        } else {
-            throw new DataNotFoundException("해당하는 예약 아이디가 존재하지 않습니다.");
+    public void cancelReservation(Long reservationId, String currentEmail) {
+
+        long currentUserId = userService.getUserByEmail(currentEmail).getId();
+
+        Reservation reservation = resRepository.findById(reservationId).orElseThrow(()->new DataNotFoundException("해당하는 예약 아이디가 존재하지 않습니다."));
+
+        if (reservation.getReservationByUserId() != currentUserId) {
+            throw new InvalidRequestException(
+                    "본인이 아닌 예약은 취소가 불가능합니다.");
         }
+
+        reservation.cancel();
     }
 
-    public Boolean checkReservationUserId(Long _reservationId,Long _userId,LocalDate _date) //신원 확인용
+    public Boolean checkReservationUserId(Long _reservationId, Long _userId, LocalDate _date) // 신원 확인용
     {
-        Reservation res = resRepository.findById(_reservationId).orElseThrow(()-> new DataNotFoundException("해당하는 예약이 존재하지 않습니다."));
-        
-        if(res.getReservationByUserId() == _userId&& res.getReservationDate().equals(_date))
-        {
+        Reservation res = resRepository.findById(_reservationId)
+                .orElseThrow(() -> new DataNotFoundException("해당하는 예약이 존재하지 않습니다."));
+
+        if (res.getReservationByUserId() == _userId && res.getReservationDate().equals(_date)) {
             return true;
         }
         return false;
     }
+
     public List<Reservation> getReservationsByDate(LocalDate _date) {
         return resRepository.getReservationByDate(_date);
     }
-   
+
     public int getDateTableSize(LocalDate _date) {
 
         return resRepository.getReservationByDate(_date).size();

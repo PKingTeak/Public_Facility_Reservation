@@ -4,6 +4,7 @@ package com.example.reservation.Facility.Controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ import com.example.reservation.Facility.Reservation;
 import com.example.reservation.Facility.ReservationService;
 import com.example.reservation.Facility.DTO.ReservationRequest;
 
-import jakarta.validation.Valid;;;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -33,9 +34,10 @@ public class ReservationController {
 
 
     @PostMapping
-    public void addReserVation(@Valid @RequestBody ReservationRequest request)
+    public void addReserVation(@Valid @RequestBody ReservationRequest request , Authentication  authentication)
     {
-        reservationService.addReservation(request); //오버라이드로 하나 생성해서 값 넣어주는방식으로 수정할 예정
+
+        reservationService.addReservation(request,authentication.getName()); //오버라이드로 하나 생성해서 값 넣어주는방식으로 수정할 예정
     }
 
 
@@ -67,9 +69,9 @@ public class ReservationController {
 
     
     @DeleteMapping("/{id}")
-    public void cancelReservation(@PathVariable long id)
+    public void cancelReservation(@PathVariable long id , Authentication authentication)
     {
-        reservationService.cancelReservation(id);
+        reservationService.cancelReservation(id,authentication.getName());
     }
     
     

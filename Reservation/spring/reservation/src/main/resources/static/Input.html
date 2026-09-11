@@ -48,10 +48,6 @@
     <button onclick="location.href='/admin/Admin.html'">
         관리자 페이지
     </button>
-    <div>
-        <label for="nameInput">예약자 이름</label>
-        <input type="text" id="nameInput" placeholder="이름을 입력하세요">
-    </div>
 
     <br>
 
@@ -376,33 +372,21 @@
         // ==================================================
 
         function addReservation() {
-            // HTML에서 예약 정보 읽기
-            const name =
-                document.getElementById(
-                    "nameInput"
-                ).value;
-
-
             const facilityId =
                 document.getElementById(
                     "facilitySelect"
                 ).value;
-
 
             const date =
                 document.getElementById(
                     "reservationDate"
                 ).value;
 
-
             const startTime = selectedStartTime;
             const endTime = selectedEndTime;
 
-
-
             // 입력 확인
             if (
-                name === "" ||
                 facilityId === "" ||
                 date === "" ||
                 startTime === "" ||
@@ -416,77 +400,34 @@
                 return;
             }
 
-
-
-            // ==============================================
-            // 이름 → User ID 조회
-            //
-            // GET /users/id?name=홍길동
-            // ==============================================
-
+            // 로그인 사용자는 서버의 Authentication에서 확인
+            // 프론트에서는 예약 정보만 전달
             fetch(
-                "/users/id-by-name?username="
-                + encodeURIComponent(name)
+                "/reservation",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
+                    },
+
+                    body: JSON.stringify({
+                        facilityId:
+                            Number(facilityId),
+
+                        date:
+                            date,
+
+                        startTime:
+                            startTime,
+
+                        endTime:
+                            endTime
+                    })
+                }
             )
-
-                .then(response => {
-
-                    if (!response.ok) {
-                        throw new Error(
-                            "USER_NOT_FOUND"
-                        );
-                    }
-
-
-                    // 서버가 long 값 하나를 반환
-                    return response.json();
-                })
-
-
-                // ==============================================
-                // User ID 조회 성공
-                // → 예약 POST 요청
-                // ==============================================
-
-                .then(userId => {
-
-                    return fetch(
-                        "/reservation",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json",
-                                "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
-                            },
-
-                            body: JSON.stringify({
-
-                                userId:
-                                    Number(userId),
-
-                                facilityId:
-                                    Number(facilityId),
-
-                                date:
-                                    date,
-
-                                startTime:
-                                    startTime,
-
-                                endTime:
-                                    endTime
-                            })
-                        }
-                    );
-
-                })
-
-
-                // ==============================================
-                // 예약 결과 처리
-                // ==============================================
 
                 .then(response => {
 
@@ -507,46 +448,20 @@
 
                 })
 
-
-                // ==============================================
-                // User가 없거나 통신 실패
-                // ==============================================
-
                 .catch(error => {
 
-                    if (
-                        error.message ===
-                        "USER_NOT_FOUND"
-                    ) {
-                        document.getElementById(
-                            "reservationResult"
-                        ).innerText =
-                            "등록되지 않은 사용자입니다. 회원가입을 진행해주세요.";
+                    console.error(
+                        "예약 오류:",
+                        error
+                    );
 
-
-                        // 입력한 이름을
-                        // 회원가입 칸에 자동으로 넣기
-                        document.getElementById(
-                            "newNameInput"
-                        ).value =
-                            name;
-                    }
-                    else {
-                        console.error(
-                            "예약 오류:",
-                            error
-                        );
-
-
-                        document.getElementById(
-                            "reservationResult"
-                        ).innerText =
-                            "서버 요청 중 오류가 발생했습니다.";
-                    }
+                    document.getElementById(
+                        "reservationResult"
+                    ).innerText =
+                        "서버 요청 중 오류가 발생했습니다.";
 
                 });
         }
-
 
 
         // ==================================================
@@ -601,7 +516,7 @@
                     headers: {
                         "Content-Type":
                             "application/json",
-                        "X-XSRF-TOKEN": getCookie("XSRF_TOKEN")
+                        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
                     },
 
                     body: JSON.stringify({
@@ -632,13 +547,6 @@
                         ).innerText =
                             "회원가입 성공";
 
-
-                        // 가입한 이름을
-                        // 예약자 이름 칸에 자동으로 넣기
-                        document.getElementById(
-                            "nameInput"
-                        ).value =
-                            name;
                     }
                     else {
                         document.getElementById(
@@ -776,7 +684,7 @@
                     method: "DELETE",
                     headers: 
                     {
-                        "X-XSRF-TOKEN" : getCookie("XSRF_TOKEN")
+                        "X-XSRF-TOKEN" : getCookie("XSRF-TOKEN")
                     }
 
                 }
@@ -811,7 +719,7 @@
 
 
         // ==============================
-        // CSRF 토큰 XSRF_TOKEN
+        // CSRF 토큰 XSRF-TOKEN
         // ==============================
         function getCookie(name) {
             const value = document.cookie.split("; ").find(row => row.startsWith(name + "="));
