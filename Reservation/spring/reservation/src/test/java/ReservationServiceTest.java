@@ -14,10 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.reservation.Facility.*;
-import com.example.reservation.Facility.DTO.ReservationRequest;
-import com.example.reservation.Facility.Exception.DuplicateDataException;
-import com.example.reservation.Facility.Repository.ReservationRepository;
+import com.example.reservation.Facilitys.*;
+import com.example.reservation.Facilitys.DTO.ReservationRequest;
+import com.example.reservation.Facilitys.Exception.DuplicateDataException;
+import com.example.reservation.Facilitys.Repository.ReservationRepository;
+import com.example.reservation.Facilitys.Service.FacilityService;
+import com.example.reservation.Facilitys.Service.ReservationService;
+import com.example.reservation.Facilitys.Service.UserService;
 
 @ExtendWith (MockitoExtension.class)
 
