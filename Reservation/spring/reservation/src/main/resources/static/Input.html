@@ -93,28 +93,10 @@
 
 
     <!-- =========================
-         회원가입 영역
+         회원가입 이동
     ========================== -->
-
     <h2>회원가입</h2>
-
-    <div>
-        <input type="text" id="newNameInput" placeholder="이름">
-
-
-        <input type="number" id="age" placeholder="나이">
-
-        <input type="email" id="email" placeholder="이메일">
-
-        <input type="password" id="password" placeholder="비밀번호">
-
-        <button onclick="newMemberShip()">
-            회원가입
-        </button>
-
-        <p id="registerResult"></p>
-    </div>
-
+    <button onclick="location.href='/Register.html'">회원가입하기</button>
     <hr>
 
     <h2>예약 취소</h2>
@@ -462,117 +444,6 @@
 
                 });
         }
-
-
-        // ==================================================
-        // 회원가입
-        //
-        // POST /users
-        // ==================================================
-
-        function newMemberShip() {
-            const name =
-                document.getElementById(
-                    "newNameInput"
-                ).value;
-
-
-            const age =
-                document.getElementById(
-                    "age"
-                ).value;
-
-            const email =
-                document.getElementById(
-                    "email"
-                ).value;
-            const password = document.getElementById(
-                "password"
-            ).value;
-
-
-
-            if (
-                name === "" ||
-                age === "" ||
-                email === "" ||
-                password === ""
-            ) {
-                document.getElementById(
-                    "registerResult"
-                ).innerText =
-                    "이름과  나이, 이메일,비밀번호을 입력해주세요.";
-
-                return;
-            }
-
-
-
-            fetch(
-                "/users",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-                        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
-                    },
-
-                    body: JSON.stringify({
-
-                        name:
-                            name,
-
-                        age:
-                            Number(age),
-
-                        email: email,
-
-                        password: password
-
-
-
-
-
-                    })
-                }
-            )
-
-                .then(response => {
-
-                    if (response.ok) {
-                        document.getElementById(
-                            "registerResult"
-                        ).innerText =
-                            "회원가입 성공";
-
-                    }
-                    else {
-                        document.getElementById(
-                            "registerResult"
-                        ).innerText =
-                            "회원가입 실패";
-                    }
-
-                })
-
-                .catch(error => {
-
-                    console.error(
-                        "회원가입 오류:",
-                        error
-                    );
-
-
-                    document.getElementById(
-                        "registerResult"
-                    ).innerText =
-                        "서버 요청 자체가 실패했습니다.";
-
-                });
-        }
-
 
 
         // ==========================================

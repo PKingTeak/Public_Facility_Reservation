@@ -11,28 +11,35 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 public class SecurityConfig {
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                                                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
 
-                .authorizeHttpRequests((authogurize) -> authogurize
-                        .requestMatchers("/Input.html",
-                        "/users","/facility/**")
-                        .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                                .authorizeHttpRequests((authogurize) -> authogurize
+                                                .requestMatchers(
+                                                                "/",
+                                                                "/Input.html",
+                                                                "/Register.html",
+                                                                "/users",
+                                                                "/email/**",
+                                                                "/facility/**",
+                                                                "/error"
+                                                        )
+                                                .permitAll()
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .anyRequest().authenticated()
 
-                )
-                .formLogin(from -> from.permitAll());
+                                )
+                                .formLogin(from -> from.permitAll());
 
-        return http.build();
-    }
+                return http.build();
+        }
 
 }

@@ -22,6 +22,7 @@ public class User
     private String email;
     @Enumerated(EnumType.STRING) //테이블에 저장될 때 Enum의 이름을 문자열로 저장하도록 지정
     private Role role = Role.USER;
+    private boolean emailVerified;
 
    private String password;
 
@@ -40,6 +41,8 @@ public class User
         this.age = _age;
         this.email = _email;
         this.password = _password;
+        emailVerified = true; //어쩌피 인증완료 됐을때만 객체를 생성할거임
+    
         
     }
     
@@ -77,9 +80,18 @@ public class User
         return this.password;
     }
 
+    public boolean getVerificate()
+    {
+        return emailVerified;
+    }
+
     public void changeRole(Role _Role)
     {
         role = _Role;
+    }
+    public void isVerificate()
+    {
+        emailVerified = true;
     }
 
 }

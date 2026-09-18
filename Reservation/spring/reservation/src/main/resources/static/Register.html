@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 20px; }
+        .field { margin-bottom: 14px; }
+        input { width: 100%; box-sizing: border-box; padding: 10px; }
+        .row { display: flex; gap: 8px; }
+        .row input { flex: 1; }
+        button { padding: 10px 14px; cursor: pointer; }
+        .actions { margin-top: 22px; display: flex; gap: 8px; }
+    </style>
+</head>
+<body>
+    <h1>회원가입</h1>
+
+    <div class="field">
+        <label for="name">이름</label>
+        <input id="name" type="text" placeholder="이름">
+    </div>
+
+    <div class="field">
+        <label for="age">나이</label>
+        <input id="age" type="number" placeholder="나이">
+    </div>
+
+    <div class="field">
+        <label for="email">이메일</label>
+        <div class="row">
+            <input id="email" type="email" placeholder="example@email.com">
+            <button type="button" onclick="sendVerificationCode()">인증번호 전송</button>
+        </div>
+        <p id="sendResult"></p>
+    </div>
+
+    <div class="field">
+        <label for="verificationCode">인증번호</label>
+        <div class="row">
+            <input id="verificationCode" type="text" placeholder="6자리 인증번호">
+            <button type="button" onclick="verifyEmail()">인증 확인</button>
+        </div>
+        <p id="verifyResult"></p>
+    </div>
+
+    <div class="field">
+        <label for="password">비밀번호</label>
+        <input id="password" type="password" placeholder="비밀번호">
+    </div>
+
+    <div class="actions">
+        <button type="button" onclick="registerUser()">회원가입</button>
+        <button type="button" onclick="location.href='/Input.html'">돌아가기</button>
+    </div>
+
+    <p id="registerResult"></p>
+
+    <script>
+        let emailVerified = false;
+        let verifiedEmail = "";
+
+        document.getElementById("email").addEventListener("input", function () {
+            if (this.value !== verifiedEmail) {
+                emailVerified = false;
+                document.getElementById("verifyResult").innerText = "";
+            }
+        });
+
+        function sendVerificationCode() {
+            const email = document.getElementById("email").value.trim();
+            const result = document.getElementById("sendResult");
+
+            if (email === "") {
+                result.innerText = "이메일을 입력해주세요.";
+                return;
+            }
+
+            emailVerified = false;
+            verifiedEmail = "";
+
+            fetch("/email/send", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("SEND_FAILED");
+                result.innerText = "인증번호를 전송했습니다.";
+            })
+            .catch(error => {
+                console.error(error);
+                result.innerText = "인증번호 전송에 실패했습니다.";
+            });
+        }
+
+        function verifyEmail() {
+            const email = document.getElementById("email").value.trim();
+            const verificationCode = document.getElementById("verificationCode").value.trim();
+            const result = document.getElementById("verifyResult");
+
+            if (email === "" || verificationCode === "") {
+                result.innerText = "이메일과 인증번호를 입력해주세요.";
+                return;
+            }
+
+            fetch("/email/verify", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
+                },
+                body: JSON.stringify({
+                    email: email,
+                    verificationCode: verificationCode
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("VERIFY_FAILED");
+                return response.json();
+            })
+            .then(verified => {
+                if (verified === true) {
+                    emailVerified = true;
+                    verifiedEmail = email;
+                    result.innerText = "이메일 인증이 완료되었습니다.";
+                } else {
+                    emailVerified = false;
+                    verifiedEmail = "";
+                    result.innerText = "인증번호가 일치하지 않거나 만료되었습니다.";
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                emailVerified = false;
+                verifiedEmail = "";
+                result.innerText = "이메일 인증 요청에 실패했습니다.";
+            });
+        }
+
+        function registerUser() {
+            const name = document.getElementById("name").value.trim();
+            const age = document.getElementById("age").value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const result = document.getElementById("registerResult");
+
+            if (name === "" || age === "" || email === "" || password === "") {
+                result.innerText = "이름, 나이, 이메일, 비밀번호를 모두 입력해주세요.";
+                return;
+            }
+
+            if (!emailVerified || email !== verifiedEmail) {
+                result.innerText = "이메일 인증을 먼저 완료해주세요.";
+                return;
+            }
+
+            fetch("/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-XSRF-TOKEN": getCookie("XSRF-TOKEN")
+                },
+                body: JSON.stringify({
+                    name: name,
+                    age: Number(age),
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    result.innerText = "회원가입이 완료되었습니다.";
+                } else {
+                    result.innerText = "회원가입에 실패했습니다.";
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                result.innerText = "서버 요청 중 오류가 발생했습니다.";
+            });
+        }
+
+        function getCookie(name) {
+            const value = document.cookie
+                .split("; ")
+                .find(row => row.startsWith(name + "="));
+
+            return value ? decodeURIComponent(value.split("=")[1]) : null;
+        }
+    </script>
+</body>
+</html>

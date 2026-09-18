@@ -21,13 +21,14 @@ import java.util.ArrayList;
 public class UserService {
  
 
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; //비밀번호 암호화 객체
 
 
-    UserService(UserRepository _UserRepository , PasswordEncoder _passwordEncoder)
+    UserService(EmailService _EmailService,UserRepository _UserRepository , PasswordEncoder _passwordEncoder)
     {
-
+        emailService = _EmailService;
         userRepository = _UserRepository;
         passwordEncoder = _passwordEncoder;
     }
@@ -40,9 +41,15 @@ public class UserService {
             throw new InvalidRequestException("잘못된 나이를 지정하였습니다");
         }
         String inputpassword = passwordEncoder.encode(userRequest.getPassword()); //비밀번호 암호화 객체를 가져옴;
+        
+        if(!emailService.checkVerify(userRequest.getEmail()))
+        {
+            throw new InvalidRequestException("인증이 안된 유저입니다");
+        }
         User user = new User(userRequest.getName(),userRequest.getAge(),userRequest.getEmail(),inputpassword); //User 비밀번호는 해시 문자열을 가지게 함.
-      
         userRepository.save(user);
+
+      
     }
 
     public User getUserById(long id)
