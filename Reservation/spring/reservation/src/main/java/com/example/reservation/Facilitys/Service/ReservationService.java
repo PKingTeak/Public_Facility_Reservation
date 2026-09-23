@@ -45,7 +45,7 @@ public class ReservationService {
     @Transactional
     public void addReservation(ReservationRequest _request, String userEmail) {
         User user = userService.getUserByEmail(userEmail);
-        Facility facility = facilityService.geFacilityInfoById(_request.getFacilityId());
+        Facility facility = facilityService.getFacilityInfoByIdWithLock(_request.getFacilityId());
 
         if (user == null || facility == null) {
             throw new DataNotFoundException("user 혹은 facility가 null입니다");

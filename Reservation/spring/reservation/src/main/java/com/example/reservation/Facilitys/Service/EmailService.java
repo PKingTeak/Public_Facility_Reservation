@@ -49,37 +49,19 @@ public class EmailService {
 
   public boolean verifyCode(String _email, String _inputCode) {
     EmailVerification verification = verifications.get(_email);
-    System.out.println("입력 이메일 = [" + _email + "]");
-    System.out.println("verification 존재 = " + (verification != null));
-
-    if (verification != null) {
-      System.out.println("저장 코드 = [" + verification.getVerificationCode() + "]");
-      System.out.println("입력 코드 = [" + _inputCode + "]");
-      System.out.println("저장 길이 = " + verification.getVerificationCode().length());
-      System.out.println("입력 길이 = " + _inputCode.length());
-      System.out.println("equals 결과 = " +
-          verification.getVerificationCode().equals(_inputCode));
-    }
     if (verification == null) {
       // 이메일 존재
-      System.out.println("현재 인증 상태4");
       return false;
     }
-
     if (verification.isExpires()) {
       // 시간 비교
       verifications.remove(_email);
-      System.out.println("현재 인증 상태3");
       return false;
     }
-
     if (!verification.getVerificationCode().equals(_inputCode)) {
-      System.out.println("현재 인증 상태2");
       return false;
     }
-
     verification.verify();
-    System.out.println("현재 인증 상태" + verification.getVerified());
     return true;
   }
 

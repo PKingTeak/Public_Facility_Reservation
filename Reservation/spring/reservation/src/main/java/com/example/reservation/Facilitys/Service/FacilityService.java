@@ -72,9 +72,15 @@ public class FacilityService  {
        return facilityRepository.findById(_id).orElseThrow(() -> new DataNotFoundException("해당하는 ID 가 존재하지 않습니다.")).getFacilityName();
     }
 
-    public Facility geFacilityInfoById(long _id)
+    public Facility getFacilityInfoById(long _id)
     {
         return facilityRepository.findById(_id).orElseThrow(() -> new DataNotFoundException("해당하는 id가 존재하지 않습니다."));
+    }
+
+   
+    public Facility getFacilityInfoByIdWithLock(Long _id)
+    {
+        return facilityRepository.findByIdWithLock(_id).orElseThrow(()-> new DataNotFoundException("해당 id가 존재하지 않습니다"));
     }
 
 

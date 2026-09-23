@@ -3,13 +3,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.classfile.ClassFile.Option;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
-import javax.xml.crypto.Data;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +62,7 @@ public class ReservationServiceTest {
 
         // When
         when(tUserService.getUserByEmail(email)).thenReturn(tUser);
-        when(tFacilityService.geFacilityInfoById(facilityId)).thenReturn(tFacility);
+        when(tFacilityService.getFacilityInfoByIdWithLock(facilityId)).thenReturn(tFacility);
         when(tReservationService.getReservationsByFacilityAndDate(facilityId, date))
                 .thenReturn(List.of(existingReservation));
 
@@ -83,7 +80,7 @@ public class ReservationServiceTest {
         User testUser = new User("테스트용", 10, email, "260922");
         long facilityId = 1;
         LocalDate date = LocalDate.of(2026, 9, 22);
-
+      
         ReservationRequest request = new ReservationRequest();
         request.setDate(date);
         request.setEndTime(LocalTime.of(12, 0));
@@ -91,7 +88,7 @@ public class ReservationServiceTest {
         request.setFacilityId(facilityId);
 
         when(tUserService.getUserByEmail(email)).thenReturn(testUser);
-        when(tFacilityService.geFacilityInfoById(facilityId)).thenReturn(tFacility);
+        when(tFacilityService.getFacilityInfoByIdWithLock(facilityId)).thenReturn(tFacility);
 
         assertDoesNotThrow(() -> tReservationService.addReservation(request, email));
 
@@ -103,7 +100,6 @@ public class ReservationServiceTest {
     void OtherReservationCancel() {
 
         // Given
-        String ownerEmail = "Test@test.com";
         String otherEmail = "Test2@test.com";
 
         User ownerUser = mock(User.class);
