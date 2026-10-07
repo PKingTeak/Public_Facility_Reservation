@@ -139,4 +139,23 @@ public class ReservationServiceTest {
                 reservation.getStatus());
     }
 
+    @DisplayName ("동시 예약 문제 테스트")
+    @Test 
+    void concurrentAccess()
+    {
+        User user1 = mock(User.class);
+        User user2 = mock(User.class);
+
+        LocalDate date = LocalDate.now();
+        LocalTime startTime = LocalTime.of(9,0);
+        LocalTime endTime = LocalTime.of(10,0);
+        
+        Facility facility = new Facility("월계체육관", "GYM", 50);
+
+
+        //get = 예약할수 있는 시간을 선택
+
+
+        //when  = 동시에 접근할때
+    }
 }
