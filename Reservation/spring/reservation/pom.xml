@@ -74,6 +74,13 @@
     <artifactId>spring-boot-starter-mail</artifactId>
 </dependency>
 
+<!-- 테스트 전용 인메모리 DB: MySQL 없이도 통합 테스트(동시 예약 등)를 실행하기 위함 -->
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>test</scope>
+</dependency>
+
 	</dependencies>
 
 	<build>
