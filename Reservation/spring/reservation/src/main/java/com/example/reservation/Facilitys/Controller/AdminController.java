@@ -44,7 +44,9 @@ public class AdminController {
     }    
     
      
-    @GetMapping("/admin/users")
+    // 클래스에 이미 @RequestMapping("/admin")이 있어서 "/admin/admin/users"로 매핑되던 버그 수정
+    // (admin.html은 /admin/users를 호출함)
+    @GetMapping("/users")
     public Collection<AdminUserResponse> getAllUserData()
     {
         return service.getAllUserDataFromAdmin();

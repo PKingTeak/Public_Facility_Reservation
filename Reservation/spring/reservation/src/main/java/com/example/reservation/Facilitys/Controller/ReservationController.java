@@ -57,9 +57,10 @@ public class ReservationController {
 
     
     @GetMapping("AllData/{date}")
-    public List<Reservation> getAllReservationByDate(LocalDate _date)
+    public List<Reservation> getAllReservationByDate(@PathVariable LocalDate date)
     {
-        return reservationService.getAllReservationByDate(_date);
+        // @PathVariable이 빠져 있어서 date가 항상 null로 들어오던 버그 수정
+        return reservationService.getAllReservationByDate(date);
     }
     
 

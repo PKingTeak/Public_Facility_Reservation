@@ -7,6 +7,7 @@ import java.time.LocalTime;
 
 
 import com.example.reservation.Facilitys.Exception.DuplicateDataException;
+import com.example.reservation.Facilitys.Exception.InvalidRequestException;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -56,8 +57,10 @@ public class Reservation {
         }
 
         public void setTimeSlot(LocalTime _starTime, LocalTime _endTime) {
+            // 이전에는 IllegalStateException을 던져서 사용자 입력 실수가 500(서버 오류)으로 응답됐다.
+            // 클라이언트가 고칠 수 있는 잘못된 요청이므로 400을 내려주는 InvalidRequestException으로 바꿨다.
             if (!_starTime.isBefore(_endTime)) {
-                throw new IllegalStateException("예약 시간이 잘못되었습니다");
+                throw new InvalidRequestException("시작 시간은 종료 시간보다 빨라야 합니다");
             }
             startTime = _starTime;
             endTime = _endTime;

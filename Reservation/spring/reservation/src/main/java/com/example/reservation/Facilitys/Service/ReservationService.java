@@ -42,8 +42,19 @@ public class ReservationService {
 
     // #region 오버라이드 함수
     // 해당 기관 정보 조회 Spring 연동
+    /**
+     * 예약 등록.
+     *
+     * 동시성 처리: 시설 행을 비관적 락(SELECT ... FOR UPDATE)으로 먼저 잡는다.
+     * 같은 시설에 대한 예약 트랜잭션은 락 때문에 한 번에 하나씩만 진행되므로,
+     * "중복 검사 → 저장" 사이에 다른 요청이 끼어드는 경쟁 조건(race condition)이 생기지 않는다.
+     * 검증: ReservationConcurrencyTest (10개 스레드 동시 요청 → 1건만 저장)
+     */
     @Transactional
     public void addReservation(ReservationRequest _request, String userEmail) {
+        if (_request.getDate().isBefore(LocalDate.now())) {
+            throw new InvalidRequestException("지난 날짜는 예약할 수 없습니다.");
+        }
         User user = userService.getUserByEmail(userEmail);
         Facility facility = facilityService.getFacilityInfoByIdWithLock(_request.getFacilityId());
 

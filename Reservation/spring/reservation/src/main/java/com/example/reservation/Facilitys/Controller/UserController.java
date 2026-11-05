@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.reservation.Facilitys.User;
 import com.example.reservation.Facilitys.Service.UserService;
 import com.example.reservation.Facilitys.DTO.UserRequest;
+import com.example.reservation.Facilitys.DTO.UserResponse;
 
 import jakarta.validation.Valid;
 
@@ -44,16 +44,17 @@ public class UserController {
     
 
     
+    // 엔티티 대신 DTO 반환: 비밀번호 해시·이메일이 응답에 노출되지 않도록
     @GetMapping("/{id}")
-    public  User getUserDataById(@PathVariable long id)
+    public UserResponse getUserDataById(@PathVariable long id)
     {
-        return userService.getUserById(id);
+        return UserResponse.from(userService.getUserById(id));
     }
 
     @GetMapping("/by-name")
-    public User getUserDataByName(@RequestParam  String username)
+    public UserResponse getUserDataByName(@RequestParam  String username)
     {
-        return userService.getUserByName(username);
+        return UserResponse.from(userService.getUserByName(username));
     }
 
     @GetMapping("/id-by-name")
