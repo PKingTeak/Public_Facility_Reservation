@@ -8,6 +8,7 @@ import com.example.reservation.Facilitys.Authorization.Role;
 import com.example.reservation.Facilitys.DTO.AdminUserResponse;
 import com.example.reservation.Facilitys.DTO.UserRequest;
 import com.example.reservation.Facilitys.Exception.DataNotFoundException;
+import com.example.reservation.Facilitys.Exception.DuplicateDataException;
 import com.example.reservation.Facilitys.Exception.InvalidRequestException;
 import com.example.reservation.Facilitys.Repository.UserRepository;
 
@@ -34,22 +35,26 @@ public class UserService {
     }
 
 
+    @Transactional
     public void registerUser(UserRequest userRequest)
     {
         if(userRequest.getAge() <= 0)
         {
             throw new InvalidRequestException("잘못된 나이를 지정하였습니다");
         }
-        String inputpassword = passwordEncoder.encode(userRequest.getPassword()); //비밀번호 암호화 객체를 가져옴;
-        
+        if(userRepository.findByEmail(userRequest.getEmail()).isPresent())
+        {
+            // 같은 이메일로 계정이 두 개 생기면 로그인(이메일 기준) 시 어떤 계정인지 모호해진다
+            throw new DuplicateDataException("이미 가입된 이메일입니다");
+        }
         if(!emailService.checkVerify(userRequest.getEmail()))
         {
             throw new InvalidRequestException("인증이 안된 유저입니다");
         }
+        String inputpassword = passwordEncoder.encode(userRequest.getPassword()); //비밀번호 암호화 객체를 가져옴;
         User user = new User(userRequest.getName(),userRequest.getAge(),userRequest.getEmail(),inputpassword); //User 비밀번호는 해시 문자열을 가지게 함.
         userRepository.save(user);
-
-      
+        emailService.consumeVerification(userRequest.getEmail()); // 한 번 쓴 인증은 폐기
     }
 
     public User getUserById(long id)
