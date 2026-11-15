@@ -44,8 +44,12 @@ public class ReservationService {
     // 해당 기관 정보 조회 Spring 연동
     @Transactional
     public void addReservation(ReservationRequest _request, String userEmail) {
-        User user = userService.getUserByEmail(userEmail);
+        // 시설 락을 트랜잭션의 첫 번째 조회로 잡는다.
+        // MySQL(InnoDB) 기본 격리 수준(REPEATABLE READ)에서는 첫 일반 조회 시점에 스냅샷이 고정된다.
+        // 사용자 조회를 먼저 하면 락을 기다리기 전의 스냅샷으로 기존 예약을 읽게 되어,
+        // 앞 트랜잭션이 막 저장한 예약을 못 보고 중복 예약이 생긴다. (동시 100건 테스트에서 20건 중복 확인)
         Facility facility = facilityService.getFacilityInfoByIdWithLock(_request.getFacilityId());
+        User user = userService.getUserByEmail(userEmail);
 
         if (user == null || facility == null) {
             throw new DataNotFoundException("user 혹은 facility가 null입니다");

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.reservation.Facilitys.Reservation;
 import com.example.reservation.Facilitys.Service.ReservationService;
 import com.example.reservation.Facilitys.DTO.ReservationRequest;
+import com.example.reservation.Facilitys.DTO.ReservationResponse;
 
 import jakarta.validation.Valid;
 
@@ -44,29 +44,35 @@ public class ReservationController {
 
 
     @GetMapping("date/{date}/reservation/{id}")
-    public Reservation selectReservation(@PathVariable LocalDate date,@PathVariable long id)
+    public ReservationResponse selectReservation(@PathVariable LocalDate date,@PathVariable long id)
     {
-        return reservationService.getReservation(date, id);
+        return ReservationResponse.from(reservationService.getReservation(date, id));
     }
     
     @GetMapping("/{date}")
-    public List<Reservation> getReservationByDate(@PathVariable LocalDate date)
+    public List<ReservationResponse> getReservationByDate(@PathVariable LocalDate date)
     {
-        return reservationService.getReservationsByDate(date);
+        return reservationService.getReservationsByDate(date).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     
     @GetMapping("AllData/{date}")
-    public List<Reservation> getAllReservationByDate(LocalDate _date)
+    public List<ReservationResponse> getAllReservationByDate(LocalDate _date)
     {
-        return reservationService.getAllReservationByDate(_date);
+        return reservationService.getAllReservationByDate(_date).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
     
 
     @GetMapping("/{facilityId}/{date}")
-    public List<Reservation> getReservationsByFacilityAndDate( @PathVariable long facilityId,@PathVariable LocalDate date)
+    public List<ReservationResponse> getReservationsByFacilityAndDate( @PathVariable long facilityId,@PathVariable LocalDate date)
     {
-        return reservationService.getReservationsByFacilityAndDate(facilityId,date);
+        return reservationService.getReservationsByFacilityAndDate(facilityId,date).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     
